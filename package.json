@@ -1,0 +1,7 @@
+{
+  "name": "yellow-diamond",
+  "version": "0.0.1",
+  "dependencies": {
+    "jszip": "^3.1.5"
+  }
+}
