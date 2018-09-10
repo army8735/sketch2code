@@ -1,3 +1,3 @@
-const YellowDiamond = require('./lib/YellowDiamond');
+const Sketch2Code = require('./lib/Sketch2Code');
 
-module.exports = YellowDiamond;
+module.exports = Sketch2Code;
