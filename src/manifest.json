@@ -1,0 +1,18 @@
+{
+  "compatibleVersion": 3,
+  "bundleVersion": 1,
+  "icon": "icon.png",
+  "commands": [
+    {
+      "name": "sketch2code",
+      "identifier": "sketch2code",
+      "script": "./index.js"
+    }
+  ],
+  "menu": {
+    "title": "sketch2code",
+    "items": [
+      "test"
+    ]
+  }
+}

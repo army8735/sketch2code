@@ -1,8 +1,31 @@
 {
   "name": "sketch2code",
   "version": "0.0.1",
+  "engines": {
+    "sketch": ">=3.0"
+  },
+  "skpm": {
+    "name": "my-plugin",
+    "manifest": "src/manifest.json",
+    "main": "my-plugin.sketchplugin",
+    "assets": [
+      "assets/**/*"
+    ]
+  },
+  "scripts": {
+    "build": "skpm-build",
+    "watch": "skpm-build --watch",
+    "start": "skpm-build --watch --run",
+    "postinstall": "npm run build && skpm-link"
+  },
   "dependencies": {
     "@tensorflow/tfjs": "^0.12.7",
-    "jszip": "^3.1.5"
-  }
+    "jszip": "^3.1.5",
+    "skpm": "^1.1.4"
+  },
+  "devDependencies": {
+    "@skpm/builder": "^0.5.2"
+  },
+  "author": "army8735 <army8735@qq.com>",
+  "__npminstall_done": false
 }
