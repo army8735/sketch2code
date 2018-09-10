@@ -2,6 +2,7 @@
   "name": "sketch2code",
   "version": "0.0.1",
   "dependencies": {
+    "@tensorflow/tfjs": "^0.12.7",
     "jszip": "^3.1.5"
   }
 }
