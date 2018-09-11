@@ -9,11 +9,12 @@
 * Sketch plugin: https://developer.sketchapp.com/guides/
 * TensorFlow.js: https://js.tensorflow.org/api/0.12.5/
 
-## 说明
+## 开发说明
 * `npm i`安装依赖
-* src为sketch插件源码目录
+* `lib`为解析.sketch文件为json格式的单独功能
+* `src`为sketch插件源码目录
   * 插件开发`npm run watch`自动侦听构建并同时输出`console`日志
-* ml为机器学习源码目录
+* `ml`为机器学习源码目录
 
 ## 思路
 
