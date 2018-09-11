@@ -12,11 +12,19 @@ export default function() {
   }
   let list = [];
   selection.map((item) => {
-    let scLayer = new ScLayer(item);
-    scLayer.parse();
-    list.push(scLayer);
+    let scLayer = ScLayer.generate(item);
+    if(scLayer) {
+      scLayer.parse();
+      if(!scLayer.meta) {
+        list.push(scLayer);
+      }
+    }
   });
-  let options = ['Desktop', 'Documents', 'Downloads', 'Custom'];
+  if(!list.length) {
+    UI.alert('Warn', 'No avalible data can be outputed!');
+    return;
+  }
+  let options = ['Desktop', 'Documents', 'Downloads'];
   let sel = UI.getSelectionFromUser(
     "Please choose your output directory:",
     options
@@ -24,7 +32,9 @@ export default function() {
   let ok = sel[2];
   let value = options[sel[1]];
   if(ok) {
-    let output = `~/${value}/sketch2code`;
-    console.log(output);
+    let path = `~/${value}/sketch2code`;
+    list.forEach((scLayer) => {
+      scLayer.output(path);
+    });
   }
 };

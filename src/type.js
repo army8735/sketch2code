@@ -1,5 +1,9 @@
 'use strict';
 
 export default {
-  group: 'Group',
+  GROUP: 'Group',
+  IMAGE: 'Image',
+  TEXT: 'Text',
+  SHAPE: 'Shape',
+  ARTBOARD: 'Artboard',
 };
