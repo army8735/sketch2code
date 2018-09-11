@@ -3,8 +3,8 @@
 import ScLayer from './ScLayer';
 
 class ScGroup extends ScLayer {
-  constructor(layer) {
-    super(layer);
+  constructor(layer, artboard) {
+    super(layer, artboard);
   }
 }
 

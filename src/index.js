@@ -1,7 +1,8 @@
 import { Document } from 'sketch/dom';
 import UI from 'sketch/ui';
 
-import ScLayer from './ScLayer';
+import factory from './factory';
+import util from './util';
 
 export default function() {
   let document = Document.getSelectedDocument();
@@ -11,8 +12,9 @@ export default function() {
     return;
   }
   let list = [];
-  selection.map((item) => {
-    let scLayer = ScLayer.generate(item);
+  selection.map(item => {
+    let artboard = util.getTopArtboard(item);
+    let scLayer = factory.getInstance(item, artboard);
     if(scLayer) {
       scLayer.parse();
       if(!scLayer.meta) {
@@ -21,7 +23,7 @@ export default function() {
     }
   });
   if(!list.length) {
-    UI.alert('Warn', 'No avalible data can be outputed!');
+    UI.alert('Warn', 'No avalible layer can be output!');
     return;
   }
   let options = ['Desktop', 'Documents', 'Downloads'];
@@ -34,7 +36,8 @@ export default function() {
   if(ok) {
     let path = `~/${value}/sketch2code`;
     list.forEach((scLayer) => {
-      scLayer.output(path);
+      // scLayer.output(path);
+      console.log(scLayer.toJSON());
     });
   }
 };
