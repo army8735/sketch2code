@@ -1,5 +1,15 @@
 # sketch2code
 
+[![NPM version](https://badge.fury.io/js/sketch2code.png)](https://npmjs.org/package/sketch2code)
+[![Build Status](https://travis-ci.org/army8735/sketch2code.svg?branch=master)](https://travis-ci.org/army8735/sketch2code)
+[![Dependency Status](https://david-dm.org/army8735/sketch2code.png)](https://david-dm.org/army8735/sketch2code)
+
+# reference
+* Sketch: https://developer.sketchapp.com/reference/api/
+* TensorFlow.js: https://js.tensorflow.org/api/0.12.5/
+
+# 思路
+
 1. 初版简化问题和需求，只考虑垂直排版和不复杂的css3移动页面，不考虑弹层，不考虑canvas，sketch文件具有良好的组织结构。
 2. 删除所有不可见和透明图层和空图层。
 3. 应用mask，将之与对应图层合并为正常图层。

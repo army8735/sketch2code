@@ -4,4 +4,4 @@ log:
 logs:
     @skpm log -f
 
-.PHONY: log
+.PHONY: log logs
