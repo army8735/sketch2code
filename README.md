@@ -10,7 +10,9 @@
 * TensorFlow.js: https://js.tensorflow.org/api/0.12.5/
 
 ## 说明
+* `npm i`安装依赖
 * src为sketch插件源码目录
+  * 插件开发`npm run watch`自动侦听构建并同时输出`console`日志
 * ml为机器学习源码目录
 
 ## 思路
