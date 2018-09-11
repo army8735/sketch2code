@@ -5,6 +5,7 @@ node_js:
 
 before_script:
   - mocha --version
+  - sudo yum install libsecret-devel
 
 script:
   - make test
