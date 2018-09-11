@@ -1,10 +1,4 @@
-log:
-    @skpm log
-
-logs:
-    @skpm log -f
-
-test-mocha:
+test:
     @mocha --timeout 5000 tests/test.js -R spec
 
 coveralls: build-test
@@ -13,4 +7,4 @@ coveralls: build-test
 test-cov: build-test
     @mocha --timeout 5000 tests/test.js --require blanket -R html-cov > tests/covrage.html
 
-.PHONY: log logs
+.PHONY: test
