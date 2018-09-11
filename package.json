@@ -5,9 +5,9 @@
     "sketch": ">=3.0"
   },
   "skpm": {
-    "name": "my-plugin",
+    "name": "sketch2code",
     "manifest": "src/manifest.json",
-    "main": "my-plugin.sketchplugin",
+    "main": "sketch2code.sketchplugin",
     "assets": [
       "assets/**/*"
     ]
@@ -24,7 +24,7 @@
     "skpm": "^1.1.4"
   },
   "devDependencies": {
-    "@skpm/builder": "^0.5.2"
+    "@skpm/builder": "^0.5.9"
   },
   "author": "army8735 <army8735@qq.com>",
   "__npminstall_done": false
