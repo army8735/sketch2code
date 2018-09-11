@@ -5,12 +5,16 @@ node_js:
 
 before_script:
   - mocha --version
-  - sudo apt-get install libsecret-1-dev
 
 script:
   - make test
 
 after_success:
   - make coveralls
+
+addons:
+  apt:
+    packages:
+    - libsecret-1-dev
 
 sudo: required
