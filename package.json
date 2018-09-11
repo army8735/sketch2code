@@ -14,9 +14,11 @@
   },
   "scripts": {
     "build": "skpm-build",
-    "watch": "skpm-build --watch",
+    "watch": "skpm-build --watch & skpm log -f",
     "start": "skpm-build --watch --run",
-    "postinstall": "npm run build && skpm-link"
+    "postinstall": "npm run build && skpm-link",
+    "log": "skpm log",
+    "logs": "skpm log -f"
   },
   "dependencies": {
     "@tensorflow/tfjs": "^0.12.7",

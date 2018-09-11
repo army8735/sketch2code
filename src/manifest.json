@@ -4,15 +4,15 @@
   "icon": "icon.png",
   "commands": [
     {
-      "name": "sketch2code",
-      "identifier": "sketch2code",
+      "name": "export",
+      "identifier": "export",
       "script": "./index.js"
     }
   ],
   "menu": {
     "title": "sketch2code",
     "items": [
-      "test"
+      "export"
     ]
   }
 }
