@@ -53,6 +53,12 @@ class ScLayer {
   set absolute(v) {
     this._absolute = !!v;
   }
+  get relative() {
+    return !!this._relative;
+  }
+  set relative(v) {
+    this._relative = !!v;
+  }
   get x() {
     return this.layer.frame.x;
   }
@@ -136,6 +142,7 @@ class ScLayer {
       children: childrenJson,
       background: this.background,
       absolute: this.absolute,
+      relative: this.relative,
       x: this.x,
       y: this.y,
       width: this.width,
