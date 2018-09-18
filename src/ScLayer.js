@@ -1,7 +1,6 @@
 'use strict';
 
 import type from './type';
-import factory from './factory';
 
 const CACHE = new Map();
 
@@ -19,6 +18,9 @@ class ScLayer {
   }
   get id() {
     return this.layer.id;
+  }
+  get name() {
+    return this.layer.name;
   }
   get type() {
     return this.layer.type;
@@ -40,6 +42,12 @@ class ScLayer {
   }
   get children() {
     return this._children || null;
+  }
+  get image() {
+    return !!this._image;
+  }
+  set image(v) {
+    this._image = !!v;
   }
   get background() {
     return !!this._background;
@@ -116,10 +124,28 @@ class ScLayer {
         if(layer.frame.y > this.artboard.frame.height) {
           return;
         }
-        let scLayer = factory.getInstance(layer, this.artboard);
+        let scLayer = ScLayer.getInstance(layer, this.artboard);
         scLayer.parse();
-        if(scLayer.type === type.GROUP && !scLayer.children) {
-          return;
+        if(scLayer.type === type.GROUP) {
+          // 过滤空组
+          if(!scLayer.children) {
+            return;
+          }
+          // 纯图片组标识image
+          let allImage = true;
+          scLayer.children.forEach(item => {
+            if(item.type === type.GROUP) {
+              if(!item.image) {
+                allImage = false;
+              }
+            }
+            else if(item.type !== type.SHAPE && item.type !== item.IMAGE) {
+              allImage = false;
+            }
+          });
+          if(allImage) {
+            scLayer.image = true;
+          }
         }
         scLayer.parent = this;
         this._children = this._children || [];
@@ -137,9 +163,11 @@ class ScLayer {
     }
     return {
       id: this.id,
+      name: this.name,
       type: this.type,
       meta: this.meta,
       children: childrenJson,
+      image: this.image,
       background: this.background,
       absolute: this.absolute,
       relative: this.relative,
@@ -159,23 +187,12 @@ class ScLayer {
     }
   }
 
-  static getInstance(layer) {
+  static getInstance(layer, artboard) {
     let id = layer.id;
     if(CACHE.has(id)) {
       return CACHE.get(id);
     }
-    switch(layer.type) {
-      case type.GROUP:
-        return new ScGroup(layer);
-      case type.IMAGE:
-        return new ScImage(layer);
-      case type.TEXT:
-        return new ScText(layer);
-      case type.SHAPE:
-        return new ScShape(layer);
-      case type.ARTBOARD:
-        return new ScArtboard(layer);
-    }
+    return new ScLayer(layer, artboard);
   }
 }
 
