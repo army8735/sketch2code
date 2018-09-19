@@ -99,7 +99,7 @@ body{
   position:relative;
   width:${data.pageWidth}px;
   height:${data.pageHeight}px;
-  border:1px dashed #000;
+  border:1px dashed #CCC;
 }
 #preview li{
   position:absolute;
