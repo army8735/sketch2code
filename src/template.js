@@ -103,8 +103,8 @@ body{
 }
 #preview li{
   position:absolute;
-  -webkit-translate:opacity 0.2s;
-  translate:opacity 0.2s;
+  -webkit-transition:opacity 0.3s;
+  transition:opacity 0.3s;
 }
 ${data.item.map(data => {
   return `#preview #i${data.id}{
