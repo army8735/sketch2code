@@ -105,7 +105,14 @@ class ScLayer {
     this.hasParsed = true;
     // 递归遍历设置父子关系，以及过滤掉隐藏的、超出范围的和空的图层
     if(!this.meta) {
-      this.layer.layers.forEach(layer => {
+      let layers;
+      if(this.type === type.SYMBOL_INSTANCE) {
+        layers = this.layer.master.layers;
+      }
+      else {
+        layers = this.layer.layers;
+      }
+      layers.forEach(layer => {
         if(layer.hidden) {
           return;
         }
@@ -155,13 +162,16 @@ class ScLayer {
   }
 
   toJSON() {
+    if(this._json) {
+      return this._json;
+    }
     let childrenJson = null;
     if(this.children) {
       childrenJson = this.children.map(child => {
         return child.toJSON();
       });
     }
-    return {
+    return this._json = {
       id: this.id,
       name: this.name,
       type: this.type,

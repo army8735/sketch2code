@@ -3,6 +3,7 @@ import UI from 'sketch/ui';
 
 import preCheck from './preCheck';
 import format from './format';
+import flatten from './flatten';
 
 export default function() {
   let selection = preCheck();
@@ -15,6 +16,9 @@ export default function() {
     UI.alert('Warn', 'No avalible layer can be output!');
     return;
   }
+  list.forEach(item => {
+    flatten(item);
+  });
   let options = ['Desktop', 'Documents', 'Downloads'];
   let sel = UI.getSelectionFromUser(
     "Please choose your output directory:",

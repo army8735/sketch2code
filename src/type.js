@@ -6,4 +6,6 @@ export default {
   TEXT: 'Text',
   SHAPE: 'Shape',
   ARTBOARD: 'Artboard',
+  SYMBOL_INSTANCE: 'SymbolInstance',
+  SYMBOL_MASTER: 'SymbolMaster',
 };

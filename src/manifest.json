@@ -13,6 +13,12 @@
       "identifier": "format",
       "script": "./debugger.js",
       "handler": "formats"
+    },
+    {
+      "name": "flatten",
+      "identifier": "flatten",
+      "script": "./debugger.js",
+      "handler": "flattens"
     }
   ],
   "menu": {
@@ -22,7 +28,8 @@
       {
         "title": "debugger",
         "items": [
-          "format"
+          "format",
+          "flatten"
         ]
       }
     ]
