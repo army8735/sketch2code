@@ -93,7 +93,6 @@ input{
 }
 body{
   display:flex;
-  flex-direction:column;
   background:#FFF;
 }
 #preview{
@@ -104,6 +103,8 @@ body{
 }
 #preview li{
   position:absolute;
+  -webkit-translate:opacity 0.2s;
+  translate:opacity 0.2s;
 }
 ${data.item.map(data => {
   return `#preview #i${data.id}{
@@ -115,9 +116,39 @@ ${data.item.map(data => {
   background-size:contain;
 }`;
 }).join('\n')}
+#preview.focus li{
+  opacity:0.1;
+}
+#preview.focus .cur{
+  opacity:1;
+}
 #list{
   flex:1;
   margin-left:10px;
+}
+#list dt{
+  color:#CCC;
+}
+#list *{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  cursor:pointer;
+}
+#list *:hover{
+  text-decoration:underline;
+}
+#list .Group{
+  color:#39F;
+}
+#list .Image{
+  color:#399;
+}
+#list .Text{
+  color:#333;
+}
+#list .Shape{
+  color:#F33;
 }
 </style>
 </head>
@@ -127,7 +158,35 @@ ${data.item.map(data => {
   return `<li id="i${data.id}" title="${data.name}"></li>`;
 }).join('\n')}
 </ul>
-<ul id="list"></ul>
+<dl id="list">
+<dt>restore</dt>
+${data.item.map(data => {
+    return `<dd id="i${data.id}" class="${data.type}" title="${data.id}">${data.name}</dd>`;
+  }).join('\n')}
+</dl>
+<script>
+var preview = document.querySelector('#preview');
+var list = document.querySelector('#list');
+var last;
+list.addEventListener('click', function(e) {
+  if(e.target.nodeName == 'DD') {
+    if(last) {
+      last.classList.remove('cur');
+    }
+    preview.classList.add('focus');
+    let id = e.target.id;
+    last = preview.querySelector('#' + id);
+    last.classList.add('cur');
+  }
+  else if(e.target.nodeName == 'DT') {
+    if(last) {
+      last.classList.remove('cur');
+    }
+    last = null;
+    preview.classList.remove('focus');
+  }
+});
+</script>
 </body>
 </html>`;
 }
