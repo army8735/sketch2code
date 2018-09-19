@@ -46,9 +46,6 @@ pre{
   margin:0;
   padding:0;
 }
-*::-webkit-scrollbar{
-  display:none;
-}
 table{
   border-collapse:collapse;
   border-spacing:0;
@@ -110,10 +107,12 @@ body{
 }
 ${data.item.map(data => {
   return `#preview #i${data.id}{
-  left:${data.x}px;
-  top:${data.y}px;
+  left:${data.xs}px;
+  top:${data.ys}px;
   width:${data.width}px;
   height:${data.height}px;
+  background:url(${data.id}.png) no-repeat center;
+  background-size:contain;
 }`;
 }).join('\n')}
 #list{

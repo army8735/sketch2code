@@ -73,20 +73,20 @@ class ScLayer {
   get y() {
     return this.layer.frame.y;
   }
-  // get xs() {
-  //   let x = this.x;
-  //   if(this.parent) {
-  //     x += this.parent.xs;
-  //   }
-  //   return x;
-  // }
-  // get ys() {
-  //   let y = this.y;
-  //   if(this.parent) {
-  //     y += this.parent.ys;
-  //   }
-  //   return y;
-  // }
+  get xs() {
+    let x = this.x;
+    if(this.parent) {
+      x += this.parent.xs;
+    }
+    return x;
+  }
+  get ys() {
+    let y = this.y;
+    if(this.parent) {
+      y += this.parent.ys;
+    }
+    return y;
+  }
   get width() {
     return this.layer.frame.width;
   }
@@ -102,18 +102,6 @@ class ScLayer {
       return;
     }
     if(this.layer.style.opacity === 0) {
-      return;
-    }
-    if(this.x < 0 && this.width < this.artboard.frame.width) {
-      return;
-    }
-    if(this.x > this.artboard.frame.width) {
-      return;
-    }
-    if(this.y < 0 && this.height < this.artboard.frame.height) {
-      return;
-    }
-    if(this.y > this.artboard.frame.height) {
       return;
     }
     this.hasParsed = true;
@@ -133,16 +121,16 @@ class ScLayer {
         if(layer.style.opacity === 0) {
           return;
         }
-        if(layer.frame.x < 0 && layer.frame.width < this.artboard.frame.width) {
+        if(layer.frame.x < 0 && layer.frame.width < this.width) {
           return;
         }
-        if(layer.frame.x > this.artboard.frame.width) {
+        if(layer.frame.x > this.width) {
           return;
         }
-        if(layer.frame.y < 0 && layer.frame.height < this.artboard.frame.height) {
+        if(layer.frame.y < 0 && layer.frame.height < this.height) {
           return;
         }
-        if(layer.frame.y > this.artboard.frame.height) {
+        if(layer.frame.y > this.height) {
           return;
         }
         let scLayer = ScLayer.getInstance(layer, this.artboard);
@@ -185,6 +173,8 @@ class ScLayer {
         return child.toJSON();
       });
     }
+    let xs = this.xs;
+    let ys = this.ys;
     return this._json = {
       id: this.id,
       name: this.name,
@@ -196,8 +186,8 @@ class ScLayer {
       relative: this.relative,
       x: this.x,
       y: this.y,
-      // xs: this.xs,
-      // ys: this.ys,
+      xs: xs,
+      ys: ys,
       width: this.width,
       height: this.height,
       children: childrenJson,
