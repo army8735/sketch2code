@@ -50,7 +50,6 @@ export function flattens() {
     let dir = `${NSHomeDirectory()}/Documents/sketch2code/format/${item.id}.json`;
     let fileHandler = NSFileHandle.fileHandleForReadingAtPath(dir);
     let data = fileHandler.readDataToEndOfFile();
-    // console.log(data);
     let s = NSString.alloc().initWithData_encoding(data, NSUTF8StringEncoding);
     let json = JSON.parse(s);
     list.push(json);
@@ -58,4 +57,17 @@ export function flattens() {
   let arr = list.map(item => {
     return flatten(item);
   });
+  let message = [];
+  arr.forEach((item, i) => {
+    let directory = `${NSHomeDirectory()}/Documents/sketch2code/flatten`;
+    let fileManager = NSFileManager.defaultManager();
+    if(!fileManager.fileExistsAtPath(NSString.stringWithString(directory))) {
+      fileManager.createDirectoryAtPath_withIntermediateDirectories_attributes_error(NSString.stringWithString(directory), true, null, null);
+    }
+    let dir = `${directory}/${list[i].id}.json`;
+    message.push(dir);
+    let s = JSON.stringify(item, null, 2);
+    NSString.stringWithString(s).writeToFile_atomically_encoding_error(NSString.stringWithString(dir), false, NSUTF8StringEncoding, null);
+  });
+  UI.alert('Message', `JSON flattener have been outputing to:\n${message.join('\n')}`);
 }

@@ -1,5 +1,38 @@
 'use strict';
 
+import type from './type';
+
+function recursion(data, list) {
+  if(Array.isArray(data)) {
+    data.forEach(item => {
+      recursion(item, list);
+    });
+    return;
+  }
+  switch(data.type) {
+    case type.GROUP:
+      if(data.image) {
+        list.push(data);
+      }
+      else if(data.children) {
+        recursion(data.children, list);
+      }
+      break;
+    case type.IMAGE:
+    case type.TEXT:
+    case type.SHAPE:
+      list.push(data);
+      break;
+    case type.SYMBOL_INSTANCE:
+      if(data.children) {
+        recursion(data.children, list);
+      }
+      break;
+  }
+}
+
 export default function(json) {
-  console.log(json);
+  let list = [];
+  recursion(json.children, list);
+  return list;
 };

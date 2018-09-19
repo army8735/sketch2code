@@ -176,7 +176,6 @@ class ScLayer {
       name: this.name,
       type: this.type,
       meta: this.meta,
-      children: childrenJson,
       image: this.image,
       background: this.background,
       absolute: this.absolute,
@@ -185,6 +184,7 @@ class ScLayer {
       y: this.y,
       width: this.width,
       height: this.height,
+      children: childrenJson,
     };
   }
   toString() {
