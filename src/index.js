@@ -1,23 +1,16 @@
-import { Document } from 'sketch/dom';
 import UI from 'sketch/ui';
 
-import preCheck from './preCheck';
 import format from './format';
 import flatten from './flatten';
 
 export default function() {
-  let selection = preCheck();
-  if(selection === null) {
-    UI.alert('Warn', 'At lease one layer must be selected!');
+  let list = format();
+  if(!list) {
     return;
   }
-  let list = format(selection);
-  if(!list.length) {
-    UI.alert('Warn', 'No avalible layer can be output!');
-    return;
-  }
-  list.forEach(item => {
-    flatten(item);
+  let arr = list.map(item => {
+    let json = item.toJSON();
+    return flatten(json);
   });
   let options = ['Desktop', 'Documents', 'Downloads'];
   let sel = UI.getSelectionFromUser(

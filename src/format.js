@@ -1,9 +1,16 @@
 'use strict';
 
+import { Document } from 'sketch/dom';
+
+import preCheck from './preCheck';
 import ScLayer from './ScLayer';
 import util from './util';
 
-export default function(selection) {
+export default function() {
+  let selection = preCheck();
+  if(!selection) {
+    return;
+  }
   let list = [];
   selection.map(item => {
     let artboard = util.getTopArtboard(item);
@@ -15,5 +22,9 @@ export default function(selection) {
       }
     }
   });
+  if(!list.length) {
+    UI.alert('Warn', 'No avalible layer can be output!');
+    return;
+  }
   return list;
 };

@@ -1,6 +1,5 @@
 'use strict';
 
-export default function(scLayer) {
-  let json = scLayer.toJSON();
+export default function(json) {
   console.log(json);
 };

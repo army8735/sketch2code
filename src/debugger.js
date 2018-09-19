@@ -3,23 +3,21 @@
 import { Document } from 'sketch/dom';
 import UI from 'sketch/ui';
 
-import preCheck from './preCheck';
 import format from './format';
 import flatten from './flatten';
+import preCheck from "./preCheck";
 
 export function formats() {
-  let selection = preCheck();
-  if(selection === null || selection.length !== 1) {
-    UI.alert('Error', 'At lease one layer must be selected!');
+  let list = format();
+  if(!list) {
     return;
   }
-  let list = format(selection);
   let message = [];
   list.forEach(item => {
-    let directory = `${NSHomeDirectory()}/Documents/sketch2code`;
-    let defaultManager = NSFileManager.defaultManager();
-    if(!defaultManager.fileExistsAtPath(NSString.stringWithString(directory))) {
-      defaultManager.createDirectoryAtPath_withIntermediateDirectories_attributes_error(NSString.stringWithString(directory), true, null, null);
+    let directory = `${NSHomeDirectory()}/Documents/sketch2code/format`;
+    let fileManager = NSFileManager.defaultManager();
+    if(!fileManager.fileExistsAtPath(NSString.stringWithString(directory))) {
+      fileManager.createDirectoryAtPath_withIntermediateDirectories_attributes_error(NSString.stringWithString(directory), true, null, null);
     }
     let dir = `${directory}/${item.id}.json`;
     message.push(dir);
@@ -30,6 +28,34 @@ export function formats() {
   UI.alert('Message', `JSON data have been outputing to:\n${message.join('\n')}`);
 }
 
-export function flattens(data) {
-
+export function flattens() {
+  let selection = preCheck();
+  if(!selection) {
+    return;
+  }
+  let check = [];
+  selection.forEach(item => {
+    let dir = `${NSHomeDirectory()}/Documents/sketch2code/format/${item.id}.json`;
+    let fileManager = NSFileManager.defaultManager();
+    if(!fileManager.fileExistsAtPath(NSString.stringWithString(dir))) {
+      check.push(dir);
+    }
+  });
+  if(check.length) {
+    UI.alert('Warn', `JSON data must be prepared by format command:\n${check.join('\n')}`);
+    return;
+  }
+  let list = [];
+  selection.forEach(item => {
+    let dir = `${NSHomeDirectory()}/Documents/sketch2code/format/${item.id}.json`;
+    let fileHandler = NSFileHandle.fileHandleForReadingAtPath(dir);
+    let data = fileHandler.readDataToEndOfFile();
+    // console.log(data);
+    let s = NSString.alloc().initWithData_encoding(data, NSUTF8StringEncoding);
+    let json = JSON.parse(s);
+    list.push(json);
+  });
+  let arr = list.map(item => {
+    return flatten(item);
+  });
 }
