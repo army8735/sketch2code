@@ -1,6 +1,7 @@
 'use strict';
 
 import { Document } from 'sketch/dom';
+import UI from 'sketch/ui';
 
 import preCheck from './preCheck';
 import ScLayer from './ScLayer';
@@ -27,4 +28,4 @@ export default function() {
     return;
   }
   return list;
-};
+}

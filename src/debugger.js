@@ -1,11 +1,13 @@
 'use strict';
 
-import { Document } from 'sketch/dom';
+import { export as expt, Document } from 'sketch/dom';
 import UI from 'sketch/ui';
 
+import preCheck from './preCheck';
 import format from './format';
 import flatten from './flatten';
-import preCheck from "./preCheck";
+import util from './util';
+import template from './template';
 
 export function formats() {
   let list = format();
@@ -64,9 +66,31 @@ export function flattens() {
     if(!fileManager.fileExistsAtPath(NSString.stringWithString(directory))) {
       fileManager.createDirectoryAtPath_withIntermediateDirectories_attributes_error(NSString.stringWithString(directory), true, null, null);
     }
-    let dir = `${directory}/${list[i].id}.json`;
-    message.push(dir);
+    let id = list[i].id;
+    let dir = `${directory}/${id}.json`;
     let s = JSON.stringify(item, null, 2);
+    NSString.stringWithString(s).writeToFile_atomically_encoding_error(NSString.stringWithString(dir), false, NSUTF8StringEncoding, null);
+    dir = `${directory}/${id}.html`;
+    message.push(dir);
+    let document = Document.getSelectedDocument();
+    let layer = document.getLayerWithID(id);
+    let artboard = util.getTopArtboard(layer);
+    let pageWidth = artboard.frame.width;
+    let pageHeight = artboard.frame.height;
+    item.forEach(data => {
+      let layer = document.getLayerWithID(data.id);
+      expt(layer, {
+        output: `${directory}`,
+        'use-id-for-name': true,
+        overwriting: true,
+        'save-for-web': true,
+      });
+    });
+    s = template({
+      pageWidth,
+      pageHeight,
+      item,
+    });
     NSString.stringWithString(s).writeToFile_atomically_encoding_error(NSString.stringWithString(dir), false, NSUTF8StringEncoding, null);
   });
   UI.alert('Message', `JSON flattener have been outputing to:\n${message.join('\n')}`);

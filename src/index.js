@@ -25,4 +25,4 @@ export default function() {
       scLayer.output(path);
     });
   }
-};
+}

@@ -73,6 +73,20 @@ class ScLayer {
   get y() {
     return this.layer.frame.y;
   }
+  // get xs() {
+  //   let x = this.x;
+  //   if(this.parent) {
+  //     x += this.parent.xs;
+  //   }
+  //   return x;
+  // }
+  // get ys() {
+  //   let y = this.y;
+  //   if(this.parent) {
+  //     y += this.parent.ys;
+  //   }
+  //   return y;
+  // }
   get width() {
     return this.layer.frame.width;
   }
@@ -182,6 +196,8 @@ class ScLayer {
       relative: this.relative,
       x: this.x,
       y: this.y,
+      // xs: this.xs,
+      // ys: this.ys,
       width: this.width,
       height: this.height,
       children: childrenJson,

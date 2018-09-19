@@ -35,4 +35,4 @@ export default function(json) {
   let list = [];
   recursion(json.children, list);
   return list;
-};
+}
