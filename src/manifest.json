@@ -9,6 +9,12 @@
       "script": "./index.js"
     },
     {
+      "name": "overall",
+      "identifier": "overall",
+      "script": "./debugger.js",
+      "handler": "overall"
+    },
+    {
       "name": "format",
       "identifier": "format",
       "script": "./debugger.js",
@@ -28,6 +34,7 @@
       {
         "title": "debugger",
         "items": [
+          "overall",
           "format",
           "flatten"
         ]

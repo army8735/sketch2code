@@ -3,12 +3,12 @@
 import type from './type';
 
 export default {
-  getTopArtboard(layer) {
+  getTop(layer) {
     if(!layer) {
       return null;
     }
     do {
-      if(layer.type === type.ARTBOARD) {
+      if(layer.type === type.ARTBOARD || layer.type === type.PAGE) {
         return layer;
       }
       layer = layer.parent;

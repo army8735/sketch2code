@@ -9,6 +9,11 @@ import flatten from './flatten';
 import util from './util';
 import template from './template';
 
+export function overall() {
+  formats();
+  flattens();
+}
+
 export function formats() {
   let list = format();
   if(!list) {
@@ -74,7 +79,7 @@ export function flattens() {
     message.push(dir);
     let document = Document.getSelectedDocument();
     let layer = document.getLayerWithID(id);
-    let artboard = util.getTopArtboard(layer);
+    let artboard = util.getTop(layer);
     let pageWidth = artboard.frame.width;
     let pageHeight = artboard.frame.height;
     item.forEach(data => {
