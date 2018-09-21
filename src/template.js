@@ -1,5 +1,7 @@
 'use strict';
 
+let hash = {};
+
 export default function(data) {
   return `<!DOCTYPE html>
 <html>
@@ -99,7 +101,7 @@ body{
   position:relative;
   width:${data.pageWidth}px;
   height:${data.pageHeight}px;
-  border:1px dashed #CCC;
+  border:1px dotted #CCC;
 }
 #preview li{
   position:absolute;
@@ -129,8 +131,9 @@ ${data.item.map(data => {
   opacity:1;
 }
 #list{
-  flex:1;
   margin-left:10px;
+  padding:0 5px;
+  border:1px dotted #CCC;
 }
 #list dt{
   color:#CCC;
@@ -141,7 +144,7 @@ ${data.item.map(data => {
   white-space:nowrap;
   cursor:pointer;
 }
-#list *:hover{
+#list>*:hover{
   text-decoration:underline;
 }
 #list .Group{
@@ -165,10 +168,19 @@ ${data.item.map(data => {
 }).join('\n')}
 </ul>
 <dl id="list">
-<dt>restore</dt>
+<dt>restore:
+${data.item.filter(data => {
+  if(hash.hasOwnProperty(data.type)) {
+    return false;
+  }
+  hash[data.type] = true;
+  return true;
+}).map(data => {
+  return `<span class="${data.type}">${data.type}</span>`;
+}).join('\n')}</dt>
 ${data.item.map(data => {
-    return `<dd id="i${data.id}" class="${data.type}" title="${data.id}">${data.name}</dd>`;
-  }).join('\n')}
+  return `<dd id="i${data.id}" class="${data.type}" title="${data.id}">${data.name}</dd>`;
+}).join('\n')}
 </dl>
 <script>
 var preview = document.querySelector('#preview');
