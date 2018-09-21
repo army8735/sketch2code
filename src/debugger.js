@@ -79,9 +79,9 @@ export function flattens() {
     message.push(dir);
     let document = Document.getSelectedDocument();
     let layer = document.getLayerWithID(id);
-    let artboard = util.getTop(layer);
-    let pageWidth = artboard.frame.width;
-    let pageHeight = artboard.frame.height;
+    let top = util.getTop(layer);
+    let pageWidth = top.frame.width;
+    let pageHeight = top.frame.height;
     item.forEach(data => {
       let layer = document.getLayerWithID(data.id);
       expt(layer, {

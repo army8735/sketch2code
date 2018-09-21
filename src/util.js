@@ -8,7 +8,10 @@ export default {
       return null;
     }
     do {
-      if(layer.type === type.ARTBOARD || layer.type === type.PAGE) {
+      if(layer.type === type.ARTBOARD) {
+        return layer;
+      }
+      if(layer.parent.type === type.PAGE) {
         return layer;
       }
       layer = layer.parent;

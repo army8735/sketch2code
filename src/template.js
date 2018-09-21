@@ -116,8 +116,14 @@ ${data.item.map(data => {
   background-size:contain;
 }`;
 }).join('\n')}
+#preview.hover li{
+  opacity:0.3;
+}
+#preview.hover .cur{
+  opacity:1;
+}
 #preview.focus li{
-  opacity:0.1;
+  opacity:0;
 }
 #preview.focus .cur{
   opacity:1;
@@ -167,22 +173,48 @@ ${data.item.map(data => {
 <script>
 var preview = document.querySelector('#preview');
 var list = document.querySelector('#list');
-var last;
+var hoverLast, focusLast;
+list.addEventListener('mouseover', function(e) {
+  if(!focusLast && e.target.nodeName == 'DD') {
+    if(hoverLast) {
+      hoverLast.classList.remove('cur');
+    }
+    preview.classList.add('hover');
+    let id = e.target.id;
+    hoverLast = preview.querySelector('#' + id);
+    hoverLast.classList.add('cur');
+  }
+});
+list.addEventListener('mouseout', function(e) {
+  if(!focusLast) {
+    if(hoverLast) {
+      hoverLast.classList.remove('cur');
+      hoverLast = null;
+    }
+    preview.classList.remove('hover');
+  }
+});
 list.addEventListener('click', function(e) {
   if(e.target.nodeName == 'DD') {
-    if(last) {
-      last.classList.remove('cur');
+    if(hoverLast) {
+      hoverLast.classList.remove('cur');
+      hoverLast = null;
     }
+    if(focusLast) {
+      focusLast.classList.remove('cur');
+    }
+    preview.classList.remove('hover');
     preview.classList.add('focus');
     let id = e.target.id;
-    last = preview.querySelector('#' + id);
-    last.classList.add('cur');
+    focusLast = preview.querySelector('#' + id);
+    focusLast.classList.add('cur');
   }
   else if(e.target.nodeName == 'DT') {
-    if(last) {
-      last.classList.remove('cur');
+    if(focusLast) {
+      focusLast.classList.remove('cur');
     }
-    last = null;
+    focusLast = null;
+    preview.classList.remove('hover');
     preview.classList.remove('focus');
   }
 });

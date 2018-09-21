@@ -79,14 +79,20 @@ class ScLayer {
   }
   get xs() {
     let x = this.x;
-    if(this.parent) {
+    if(this.type === type.GROUP && this.top.id === this.id) {
+      return 0;
+    }
+    else if(this.parent) {
       x += this.parent.xs;
     }
     return x;
   }
   get ys() {
     let y = this.y;
-    if(this.parent) {
+    if(this.type === type.GROUP && this.top.id === this.id) {
+      return 0;
+    }
+    else if(this.parent) {
       y += this.parent.ys;
     }
     return y;
@@ -207,12 +213,12 @@ class ScLayer {
     }
   }
 
-  static getInstance(layer, top) {
+  static getInstance(layer, level, top) {
     let id = layer.id;
     if(CACHE.has(id)) {
       return CACHE.get(id);
     }
-    return new ScLayer(layer, top);
+    return new ScLayer(layer, level, top);
   }
 }
 
