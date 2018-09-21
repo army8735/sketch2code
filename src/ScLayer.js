@@ -5,16 +5,20 @@ import type from './type';
 const CACHE = new Map();
 
 class ScLayer {
-  constructor(layer, artboard) {
+  constructor(layer, level, top) {
     this._layer = layer;
-    this._artboard = artboard;
+    this._level = level;
+    this._top = top;
   }
 
   get layer() {
     return this._layer;
   }
-  get artboard() {
-    return this._artboard;
+  get level() {
+    return this._level;
+  }
+  get top() {
+    return this._top;
   }
   get id() {
     return this.layer.id;
@@ -133,7 +137,7 @@ class ScLayer {
         if(layer.frame.y > this.height) {
           return;
         }
-        let scLayer = ScLayer.getInstance(layer, this.artboard);
+        let scLayer = ScLayer.getInstance(layer, this.level + 1, this.top);
         scLayer.parse();
         if(scLayer.type === type.GROUP) {
           // 过滤空组
@@ -141,18 +145,18 @@ class ScLayer {
             return;
           }
           // 纯图片组标识image
-          let allImage = true;
+          let image = true;
           scLayer.children.forEach(item => {
             if(item.type === type.GROUP) {
               if(!item.image) {
-                allImage = false;
+                image = false;
               }
             }
             else if(item.type !== type.SHAPE && item.type !== item.IMAGE) {
-              allImage = false;
+              image = false;
             }
           });
-          if(allImage) {
+          if(image) {
             scLayer.image = true;
           }
         }
@@ -203,12 +207,12 @@ class ScLayer {
     }
   }
 
-  static getInstance(layer, artboard) {
+  static getInstance(layer, top) {
     let id = layer.id;
     if(CACHE.has(id)) {
       return CACHE.get(id);
     }
-    return new ScLayer(layer, artboard);
+    return new ScLayer(layer, top);
   }
 }
 

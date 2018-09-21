@@ -14,8 +14,8 @@ export default function() {
   }
   let list = [];
   selection.map(item => {
-    let artboard = util.getTopArtboard(item);
-    let scLayer = ScLayer.getInstance(item, artboard);
+    let artboard = util.getTop(item);
+    let scLayer = ScLayer.getInstance(item, 0, artboard);
     if(scLayer) {
       scLayer.parse();
       if(!scLayer.meta) {
