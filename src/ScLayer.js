@@ -59,6 +59,12 @@ class ScLayer {
   set background(v) {
     this._background = !!v;
   }
+  get border() {
+    return !!this._border;
+  }
+  set border(v) {
+    this._border = !!v;
+  }
   get absolute() {
     return !!this._absolute;
   }
@@ -192,6 +198,7 @@ class ScLayer {
       meta: this.meta,
       image: this.image,
       background: this.background,
+      border: this.border,
       absolute: this.absolute,
       relative: this.relative,
       x: this.x,
