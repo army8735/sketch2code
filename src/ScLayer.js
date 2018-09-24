@@ -53,6 +53,12 @@ class ScLayer {
   set image(v) {
     this._image = !!v;
   }
+  get overlay() {
+    return !!this._overlay;
+  }
+  set overlay(v) {
+    this._overlay = !!v;
+  }
   get background() {
     return !!this._background;
   }
