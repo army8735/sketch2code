@@ -9,6 +9,7 @@ class ScLayer {
     this._layer = layer;
     this._level = level;
     this._top = top;
+    this._overlay = [];
   }
 
   get layer() {
@@ -29,7 +30,7 @@ class ScLayer {
   get type() {
     return this.layer.type;
   }
-  get meta() {
+  get isMeta() {
     return [type.IMAGE, type.SHAPE, type.TEXT].indexOf(this.type) > -1;
   }
   get hasParsed() {
@@ -47,47 +48,47 @@ class ScLayer {
   get children() {
     return this._children || null;
   }
-  get ignore() {
-    return !!this._ignore;
+  get isIgnore() {
+    return !!this._isIgnore;
   }
-  set ignore(v) {
-    this._ignore = !!v;
+  set isIgnore(v) {
+    this._isIgnore = !!v;
   }
-  get image() {
-    return !!this._image;
+  get isImage() {
+    return !!this._isImage;
   }
-  set image(v) {
-    this._image = !!v;
+  set isImage(v) {
+    this._isImage = !!v;
   }
   get overlay() {
-    return !!this._overlay;
+    return this._overlay;
   }
   set overlay(v) {
-    this._overlay = !!v;
+    this._overlay = v;
   }
-  get background() {
-    return !!this._background;
+  get isBackground() {
+    return !!this._isBackground;
   }
-  set background(v) {
-    this._background = !!v;
+  set isBackground(v) {
+    this._isBackground = !!v;
   }
-  get border() {
-    return !!this._border;
+  get isBorder() {
+    return !!this._isBorder;
   }
-  set border(v) {
-    this._border = !!v;
+  set isBorder(v) {
+    this._isBorder = !!v;
   }
-  get absolute() {
-    return !!this._absolute;
+  get isAbsolute() {
+    return !!this._isAbsolute;
   }
-  set absolute(v) {
-    this._absolute = !!v;
+  set isAbsolute(v) {
+    this._isAbsolute = !!v;
   }
-  get relative() {
-    return !!this._relative;
+  get isRelative() {
+    return !!this._isRelative;
   }
-  set relative(v) {
-    this._relative = !!v;
+  set isRelative(v) {
+    this._isRelative = !!v;
   }
   get x() {
     return this.layer.frame.x;
@@ -115,11 +116,30 @@ class ScLayer {
     }
     return y;
   }
+  get zs() {
+    return this._zs || 0;
+  }
+  set zs(v) {
+    this._zs = v;
+  }
   get width() {
     return this.layer.frame.width;
   }
   get height() {
     return this.layer.frame.height;
+  }
+
+  addOverlay(v) {
+    if(this.overlay.indexOf(v) > -1) {
+      return;
+    }
+    this.overlay.push(v);
+  }
+  removeOverlay(v) {
+    let i = this.overlay.indexOf(v);
+    if(i > -1) {
+      this.overlay.splice(i, 1);
+    }
   }
 
   parse() {
@@ -134,7 +154,7 @@ class ScLayer {
     }
     this.hasParsed = true;
     // 递归遍历设置父子关系，以及过滤掉隐藏的、超出范围的和空的图层
-    if(!this.meta) {
+    if(!this.isMeta) {
       let layers;
       if(this.type === type.SYMBOL_INSTANCE) {
         layers = this.layer.master.layers;
@@ -169,20 +189,23 @@ class ScLayer {
             return;
           }
           // 纯图片组标识image
-          let image = true;
+          let isImage = true;
           scLayer.children.forEach(item => {
             if(item.type === type.GROUP) {
-              if(!item.image) {
-                image = false;
+              if(!item.isImage) {
+                isImage = false;
               }
             }
             else if(item.type !== type.SHAPE && item.type !== item.IMAGE) {
-              image = false;
+              isImage = false;
             }
           });
-          if(image) {
-            scLayer.image = true;
+          if(isImage) {
+            scLayer.isImage = true;
           }
+        }
+        else {
+          scLayer.isImage = scLayer.type === type.SHAPE || scLayer.type === type.IMAGE;
         }
         scLayer.parent = this;
         this._children = this._children || [];
@@ -207,16 +230,19 @@ class ScLayer {
       id: this.id,
       name: this.name,
       type: this.type,
-      meta: this.meta,
-      image: this.image,
-      background: this.background,
-      border: this.border,
-      absolute: this.absolute,
-      relative: this.relative,
+      isMeta: this.isMeta,
+      isIgnore: this.isIgnore,
+      isImage: this.isImage,
+      overlay: this.overlay,
+      isBackground: this.isBackground,
+      isBorder: this.isBorder,
+      isAbsolute: this.isAbsolute,
+      isRelative: this.isRelative,
       x: this.x,
       y: this.y,
       xs: xs,
       ys: ys,
+      zs: this.zs,
       width: this.width,
       height: this.height,
       children: childrenJson,
@@ -227,7 +253,7 @@ class ScLayer {
   }
 
   output(path) {
-    if(!this.meta) {
+    if(!this.isMeta) {
       //
     }
   }
@@ -237,7 +263,9 @@ class ScLayer {
     if(CACHE.has(id)) {
       return CACHE.get(id);
     }
-    return new ScLayer(layer, level, top);
+    let item = new ScLayer(layer, level, top);
+    CACHE.set(id, item);
+    return item;
   }
 }
 

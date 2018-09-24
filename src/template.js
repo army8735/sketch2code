@@ -163,7 +163,9 @@ ${data.item.map(data => {
 </head>
 <body>
 <ul id="preview">
-${data.item.map(data => {
+${data.item.filter(data => {
+  return !data.isBackground;
+}).map(data => {
   return `<li id="i${data.id}" title="${data.name}"></li>`;
 }).join('\n')}
 </ul>
@@ -178,7 +180,9 @@ ${data.item.filter(data => {
 }).map(data => {
   return `<span class="${data.type}">${data.type}</span>`;
 }).join('\n')}</dt>
-${data.item.map(data => {
+${data.item.filter(data => {
+    return !data.isBackground;
+}).map(data => {
   return `<dd id="i${data.id}" class="${data.type}" title="${data.id}">${data.name}</dd>`;
 }).join('\n')}
 </dl>

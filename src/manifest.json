@@ -25,6 +25,12 @@
       "identifier": "flatten",
       "script": "./debugger.js",
       "handler": "flattens"
+    },
+    {
+      "name": "overlay",
+      "identifier": "overlay",
+      "script": "./debugger.js",
+      "handler": "overlays"
     }
   ],
   "menu": {
@@ -36,7 +42,8 @@
         "items": [
           "overall",
           "format",
-          "flatten"
+          "flatten",
+          "overlay"
         ]
       }
     ]

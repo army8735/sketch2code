@@ -34,5 +34,8 @@ function recursion(data, list) {
 export default function(json) {
   let list = [];
   recursion(json.children, list);
+  list.forEach((item, i) => {
+    item.zs = i;
+  });
   return list;
 }

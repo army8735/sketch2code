@@ -1,3 +1,5 @@
+'use strict';
+
 import UI from 'sketch/ui';
 
 import format from './format';

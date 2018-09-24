@@ -6,18 +6,24 @@ import UI from 'sketch/ui';
 import preCheck from './preCheck';
 import format from './format';
 import flatten from './flatten';
+import overlay from './overlay';
 import util from './util';
 import template from './template';
 
 export function overall() {
-  formats();
-  flattens();
+  let list = [formats, flattens, overlays];
+  for(let i = 0; i < list.length; i++) {
+    let res = list[i]();
+    if(!res) {
+      return;
+    }
+  }
 }
 
 export function formats() {
   let list = format();
   if(!list) {
-    return;
+    return false;
   }
   let message = [];
   list.forEach(item => {
@@ -32,13 +38,14 @@ export function formats() {
     let s = JSON.stringify(json, null, 2);
     NSString.stringWithString(s).writeToFile_atomically_encoding_error(NSString.stringWithString(dir), false, NSUTF8StringEncoding, null);
   });
-  UI.alert('Message', `JSON data have been outputing to:\n${message.join('\n')}`);
+  UI.alert('Message', `JSON format have been outputing to:\n${message.join('\n')}`);
+  return true;
 }
 
 export function flattens() {
   let selection = preCheck();
   if(!selection) {
-    return;
+    return false;
   }
   let check = [];
   selection.forEach(item => {
@@ -50,7 +57,7 @@ export function flattens() {
   });
   if(check.length) {
     UI.alert('Warn', `JSON data must be prepared by format command:\n${check.join('\n')}`);
-    return;
+    return false;
   }
   let list = [];
   selection.forEach(item => {
@@ -73,10 +80,10 @@ export function flattens() {
     }
     let id = list[i].id;
     let dir = `${directory}/${id}.json`;
+    message.push(dir);
     let s = JSON.stringify(item, null, 2);
     NSString.stringWithString(s).writeToFile_atomically_encoding_error(NSString.stringWithString(dir), false, NSUTF8StringEncoding, null);
     dir = `${directory}/${id}.html`;
-    message.push(dir);
     let document = Document.getSelectedDocument();
     let layer = document.getLayerWithID(id);
     let top = util.getTop(layer);
@@ -98,5 +105,75 @@ export function flattens() {
     });
     NSString.stringWithString(s).writeToFile_atomically_encoding_error(NSString.stringWithString(dir), false, NSUTF8StringEncoding, null);
   });
-  UI.alert('Message', `JSON flattener have been outputing to:\n${message.join('\n')}`);
+  UI.alert('Message', `JSON flatten have been outputing to:\n${message.join('\n')}`);
+  return true;
+}
+
+export function overlays() {
+  let selection = preCheck();
+  if(!selection) {
+    return false;
+  }
+  let check = [];
+  selection.forEach(item => {
+    let dir = `${NSHomeDirectory()}/Documents/sketch2code/flatten/${item.id}.json`;
+    let fileManager = NSFileManager.defaultManager();
+    if(!fileManager.fileExistsAtPath(NSString.stringWithString(dir))) {
+      check.push(dir);
+    }
+  });
+  if(check.length) {
+    UI.alert('Warn', `JSON data must be prepared by flatten command:\n${check.join('\n')}`);
+    return false;
+  }
+  let list = [];
+  let ids = [];
+  selection.forEach(item => {
+    ids.push(item.id);
+    let dir = `${NSHomeDirectory()}/Documents/sketch2code/flatten/${item.id}.json`;
+    let fileHandler = NSFileHandle.fileHandleForReadingAtPath(dir);
+    let data = fileHandler.readDataToEndOfFile();
+    let s = NSString.alloc().initWithData_encoding(data, NSUTF8StringEncoding);
+    let json = JSON.parse(s);
+    list.push(json);
+  });
+  let arr = list.map(item => {
+    return overlay(item);
+  });
+  let message = [];
+  arr.forEach((item, i) => {
+    let directory = `${NSHomeDirectory()}/Documents/sketch2code/overlay`;
+    let fileManager = NSFileManager.defaultManager();
+    if(!fileManager.fileExistsAtPath(NSString.stringWithString(directory))) {
+      fileManager.createDirectoryAtPath_withIntermediateDirectories_attributes_error(NSString.stringWithString(directory), true, null, null);
+    }
+    let id = ids[i];
+    let dir = `${directory}/${id}.json`;
+    message.push(dir);
+    let s = JSON.stringify(item, null, 2);
+    NSString.stringWithString(s).writeToFile_atomically_encoding_error(NSString.stringWithString(dir), false, NSUTF8StringEncoding, null);
+    dir = `${directory}/${id}.html`;
+    let document = Document.getSelectedDocument();
+    let layer = document.getLayerWithID(id);
+    let top = util.getTop(layer);
+    let pageWidth = top.frame.width;
+    let pageHeight = top.frame.height;
+    item.forEach(data => {
+      let layer = document.getLayerWithID(data.id);
+      expt(layer, {
+        output: `${directory}`,
+        'use-id-for-name': true,
+        overwriting: true,
+        'save-for-web': true,
+      });
+    });
+    s = template({
+      pageWidth,
+      pageHeight,
+      item,
+    });
+    NSString.stringWithString(s).writeToFile_atomically_encoding_error(NSString.stringWithString(dir), false, NSUTF8StringEncoding, null);
+  });
+  UI.alert('Message', `JSON overlay have been outputing to:\n${message.join('\n')}`);
+  return true;
 }
