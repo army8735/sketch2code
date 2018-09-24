@@ -1,13 +1,12 @@
 'use strict';
 
-let hash = {};
-
 export default function(data) {
+  let hash = {};
   return `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>flatten</title>
+<title>${data.title}</title>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
 <meta name="format-detection" content="telephone=no"/>
@@ -171,7 +170,7 @@ ${data.item.filter(data => {
 </ul>
 <dl id="list">
 <dt>restore:
-${data.item.filter(data => {
+${data.item.filter(data => {console.log(data);
   if(hash.hasOwnProperty(data.type)) {
     return false;
   }

@@ -99,6 +99,7 @@ export function flattens() {
       });
     });
     s = template({
+      title: 'flatten',
       pageWidth,
       pageHeight,
       item,
@@ -168,6 +169,7 @@ export function overlays() {
       });
     });
     s = template({
+      title: 'overlay',
       pageWidth,
       pageHeight,
       item,
