@@ -47,6 +47,12 @@ class ScLayer {
   get children() {
     return this._children || null;
   }
+  get ignore() {
+    return !!this._ignore;
+  }
+  set ignore(v) {
+    this._ignore = !!v;
+  }
   get image() {
     return !!this._image;
   }
