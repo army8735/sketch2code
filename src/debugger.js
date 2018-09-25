@@ -7,11 +7,12 @@ import preCheck from './preCheck';
 import format from './format';
 import flatten from './flatten';
 import overlay from './overlay';
+import linear from './linear';
 import util from './util';
 import template from './template';
 
 export function overall() {
-  let list = [formats, flattens, overlays];
+  let list = [formats, flattens, overlays, linears];
   for(let i = 0; i < list.length; i++) {
     let res = list[i]();
     if(!res) {
@@ -98,7 +99,7 @@ export function flattens() {
         'save-for-web': true,
       });
     });
-    s = template({
+    s = template.flatten({
       title: 'flatten',
       pageWidth,
       pageHeight,
@@ -168,7 +169,7 @@ export function overlays() {
         'save-for-web': true,
       });
     });
-    s = template({
+    s = template.flatten({
       title: 'overlay',
       pageWidth,
       pageHeight,
@@ -177,5 +178,77 @@ export function overlays() {
     NSString.stringWithString(s).writeToFile_atomically_encoding_error(NSString.stringWithString(dir), false, NSUTF8StringEncoding, null);
   });
   UI.alert('Message', `JSON overlay have been outputing to:\n${message.join('\n')}`);
+  return true;
+}
+
+export function linears() {
+  let selection = preCheck();
+  if(!selection) {
+    return false;
+  }
+  let check = [];
+  selection.forEach(item => {
+    let dir = `${NSHomeDirectory()}/Documents/sketch2code/overlay/${item.id}.json`;
+    let fileManager = NSFileManager.defaultManager();
+    if(!fileManager.fileExistsAtPath(NSString.stringWithString(dir))) {
+      check.push(dir);
+    }
+  });
+  if(check.length) {
+    UI.alert('Warn', `JSON data must be prepared by overlay command:\n${check.join('\n')}`);
+    return false;
+  }
+  let list = [];
+  let ids = [];
+  selection.forEach(item => {
+    ids.push(item.id);
+    let dir = `${NSHomeDirectory()}/Documents/sketch2code/overlay/${item.id}.json`;
+    let fileHandler = NSFileHandle.fileHandleForReadingAtPath(dir);
+    let data = fileHandler.readDataToEndOfFile();
+    let s = NSString.alloc().initWithData_encoding(data, NSUTF8StringEncoding);
+    let json = JSON.parse(s);
+    list.push(json);
+  });
+  let arr = list.map(item => {
+    return linear(item);
+  });
+  let message = [];
+  arr.forEach((item, i) => {
+    let directory = `${NSHomeDirectory()}/Documents/sketch2code/linear`;
+    let fileManager = NSFileManager.defaultManager();
+    if(!fileManager.fileExistsAtPath(NSString.stringWithString(directory))) {
+      fileManager.createDirectoryAtPath_withIntermediateDirectories_attributes_error(NSString.stringWithString(directory), true, null, null);
+    }
+    let id = ids[i];
+    let dir = `${directory}/${id}.json`;
+    message.push(dir);
+    let s = JSON.stringify(item, null, 2);
+    NSString.stringWithString(s).writeToFile_atomically_encoding_error(NSString.stringWithString(dir), false, NSUTF8StringEncoding, null);
+    dir = `${directory}/${id}.html`;
+    let document = Document.getSelectedDocument();
+    let layer = document.getLayerWithID(id);
+    let top = util.getTop(layer);
+    let pageWidth = top.frame.width;
+    let pageHeight = top.frame.height;
+    item.foreground.forEach(data => {
+      data.list.forEach(obj => {
+        let layer = document.getLayerWithID(obj.id);
+        expt(layer, {
+          output: `${directory}`,
+          'use-id-for-name': true,
+          overwriting: true,
+          'save-for-web': true,
+        });
+      });
+    });
+    s = template.linear({
+      title: 'linear',
+      pageWidth,
+      pageHeight,
+      item,
+    });
+    NSString.stringWithString(s).writeToFile_atomically_encoding_error(NSString.stringWithString(dir), false, NSUTF8StringEncoding, null);
+  });
+  UI.alert('Message', `JSON linear have been outputing to:\n${message.join('\n')}`);
   return true;
 }

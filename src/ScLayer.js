@@ -116,6 +116,12 @@ class ScLayer {
     }
     return y;
   }
+  get z() {
+    return this._z || 0;
+  }
+  set z(v) {
+    this._z = v;
+  }
   get zs() {
     return this._zs || 0;
   }
@@ -240,6 +246,7 @@ class ScLayer {
       isRelative: this.isRelative,
       x: this.x,
       y: this.y,
+      z: this.z,
       xs: xs,
       ys: ys,
       zs: this.zs,

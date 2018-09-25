@@ -35,7 +35,7 @@ export default function(json) {
   let list = [];
   recursion(json.children, list);
   list.forEach((item, i) => {
-    item.zs = i;
+    item.z = i;
   });
   return list;
 }
