@@ -386,6 +386,9 @@ ${data.item.foreground.map(data => {
 #list dd{
   border-top:1px solid #EEE;
 }
+#list div:hover{
+  text-decoration:underline;
+}
 #list .Group{
   color:#39F;
 }
