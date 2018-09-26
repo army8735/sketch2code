@@ -23,10 +23,11 @@
   "dependencies": {
     "@tensorflow/tfjs": "^0.13.0",
     "jszip": "^3.1.5",
-    "skpm": "^1.1.4"
+    "skpm": "^1.1.7"
   },
   "devDependencies": {
-    "@skpm/builder": "^0.5.9",
+    "@skpm/builder": "^0.5.10",
+    "@tensorflow/tfjs-node": "^0.1.17",
     "blanket": "^1.2.3",
     "coveralls": "^3.0.2",
     "expect.js": "^0.3.1",
