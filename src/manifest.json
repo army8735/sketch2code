@@ -31,12 +31,6 @@
       "identifier": "overlay",
       "script": "./debugger.js",
       "handler": "overlays"
-    },
-    {
-      "name": "linear",
-      "identifier": "linear",
-      "script": "./debugger.js",
-      "handler": "linears"
     }
   ],
   "menu": {
@@ -49,8 +43,7 @@
           "overall",
           "format",
           "flatten",
-          "overlay",
-          "linear"
+          "overlay"
         ]
       }
     ]
