@@ -31,7 +31,7 @@ class ScLayer {
     return this.layer.type;
   }
   get isMeta() {
-    return [type.IMAGE, type.SHAPE, type.TEXT].indexOf(this.type) > -1;
+    return [type.IMAGE, type.SHAPE, type.SHAPE_PATH, type.TEXT].indexOf(this.type) > -1;
   }
   get hasParsed() {
     return !!this._hasParsed;

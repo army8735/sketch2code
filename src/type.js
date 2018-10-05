@@ -5,6 +5,7 @@ export default {
   IMAGE: 'Image',
   TEXT: 'Text',
   SHAPE: 'Shape',
+  SHAPE_PATH: 'ShapePath',
   ARTBOARD: 'Artboard',
   PAGE: 'Page',
   SYMBOL_INSTANCE: 'SymbolInstance',

@@ -12,7 +12,7 @@ import util from './util';
 import template from './template';
 
 export function overall() {
-  let list = [formats, flattens, overlays, linears];
+  let list = [formats, flattens, overlays, edges];
   for(let i = 0; i < list.length; i++) {
     let res = list[i]();
     if(!res) {
@@ -181,7 +181,7 @@ export function overlays() {
   return true;
 }
 
-export function linears() {
+export function edges() {
   let selection = preCheck();
   if(!selection) {
     return false;
@@ -210,11 +210,11 @@ export function linears() {
     list.push(json);
   });
   let arr = list.map(item => {
-    return linear(item);
+    return edge(item);
   });
   let message = [];
   arr.forEach((item, i) => {
-    let directory = `${NSHomeDirectory()}/Documents/sketch2code/linear`;
+    let directory = `${NSHomeDirectory()}/Documents/sketch2code/edge`;
     let fileManager = NSFileManager.defaultManager();
     if(!fileManager.fileExistsAtPath(NSString.stringWithString(directory))) {
       fileManager.createDirectoryAtPath_withIntermediateDirectories_attributes_error(NSString.stringWithString(directory), true, null, null);
@@ -249,6 +249,6 @@ export function linears() {
     });
     NSString.stringWithString(s).writeToFile_atomically_encoding_error(NSString.stringWithString(dir), false, NSUTF8StringEncoding, null);
   });
-  UI.alert('Message', `JSON linear have been outputing to:\n${message.join('\n')}`);
+  UI.alert('Message', `JSON edge have been outputing to:\n${message.join('\n')}`);
   return true;
 }
