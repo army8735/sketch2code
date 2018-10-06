@@ -238,8 +238,7 @@ list.addEventListener('click', function(e) {
 </html>`;
 }
 
-function linear(data) {
-  let hash = {};
+function edge(data) {
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -342,139 +341,41 @@ body{
 }
 #preview li{
   position:absolute;
-  -webkit-transition:opacity 0.3s;
-  transition:opacity 0.3s;
 }
-${data.item.foreground.map(data => {
-  return data.list.map(data => {
-    return `#preview #i${data.id}{
-    left:${data.xs}px;
-    top:${data.ys}px;
-    width:${data.width}px;
-    height:${data.height}px;
-    background:url(${data.id}.png) no-repeat center;
-    background-size:contain;
-  }`;
-  }).join('\n');
-}).join('\n')}
-#preview.hover li{
-  opacity:0.3;
+#preview .oh{
+  height:0;
+  border-top:1px solid #00a0e9;
+  opacity:0.5;
 }
-#preview.hover .cur{
-  opacity:1;
+#preview .ov{
+  width:0;
+  border-left:1px solid #e4007f;
+  opacity:0.5;
 }
-#preview.focus li{
-  opacity:0;
+#preview .h{
+  height:0;
+  border-top:1px dotted #fff100;
 }
-#preview.focus .cur{
-  opacity:1;
-}
-#list{
-  margin-left:10px;
-  padding:0 5px;
-  border:1px dotted #CCC;
-}
-#list dt{
-  color:#CCC;
-}
-#list *{
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  cursor:pointer;
-}
-#list dd{
-  border-top:1px solid #EEE;
-}
-#list div:hover{
-  text-decoration:underline;
-}
-#list .Group{
-  color:#39F;
-}
-#list .Image{
-  color:#399;
-}
-#list .Text{
-  color:#333;
-}
-#list .Shape{
-  color:#F33;
+#preview .v{
+  width:0;
+  border-left:1px dotted #221815;
 }
 </style>
 </head>
 <body>
 <ul id="preview">
-${data.item.foreground.map(data => {
-  return data.list.map(data => {
-    return `<li id="i${data.id}" title="${data.name}"></li>`;
-  }).join('\n');
-}).join('\n')}
+  ${data.item.originHorizontal.map(data => {
+    return `<li class="oh" style="left:${data.x[0]}px;top:${data.y}px;width:${data.x[1]-data.x[0]}px"></li>`;
+  }).join('\n')}
+  ${data.item.originVertical.map(data => {
+    return `<li class="ov" style="left:${data.x}px;top:${data.y[0]}px;height:${data.y[1] - data.y[0]}px"></li>`;
+  }).join('\n')}
 </ul>
-<dl id="list">
-<dt>restore:</dt>
-${data.item.foreground.map(data => {
-  return `<dd>
-    ${data.list.map(data => {
-      return `<div id="i${data.id}" class="${data.type}" title="${data.id}">${data.name}</div>`;  
-    }).join('\n')}
-  </dd>`;
-}).join('\n')}
-</dl>
-<script>
-var preview = document.querySelector('#preview');
-var list = document.querySelector('#list');
-var hoverLast, focusLast;
-list.addEventListener('mouseover', function(e) {
-  if(!focusLast && e.target.nodeName == 'DIV') {
-    if(hoverLast) {
-      hoverLast.classList.remove('cur');
-    }
-    preview.classList.add('hover');
-    let id = e.target.id;
-    hoverLast = preview.querySelector('#' + id);
-    hoverLast.classList.add('cur');
-  }
-});
-list.addEventListener('mouseout', function(e) {
-  if(!focusLast) {
-    if(hoverLast) {
-      hoverLast.classList.remove('cur');
-      hoverLast = null;
-    }
-    preview.classList.remove('hover');
-  }
-});
-list.addEventListener('click', function(e) {
-  if(e.target.nodeName == 'DIV') {
-    if(hoverLast) {
-      hoverLast.classList.remove('cur');
-      hoverLast = null;
-    }
-    if(focusLast) {
-      focusLast.classList.remove('cur');
-    }
-    preview.classList.remove('hover');
-    preview.classList.add('focus');
-    let id = e.target.id;
-    focusLast = preview.querySelector('#' + id);
-    focusLast.classList.add('cur');
-  }
-  else if(e.target.nodeName == 'DT') {
-    if(focusLast) {
-      focusLast.classList.remove('cur');
-    }
-    focusLast = null;
-    preview.classList.remove('hover');
-    preview.classList.remove('focus');
-  }
-});
-</script>
 </body>
 </html>`;
 }
 
 export default {
   flatten,
-  linear,
+  edge,
 };

@@ -91,10 +91,10 @@ class ScLayer {
     this._isRelative = !!v;
   }
   get x() {
-    return this.layer.frame.x;
+    return Math.round(this.layer.frame.x);
   }
   get y() {
-    return this.layer.frame.y;
+    return Math.round(this.layer.frame.y);
   }
   get xs() {
     let x = this.x;
@@ -129,10 +129,10 @@ class ScLayer {
     this._zs = v;
   }
   get width() {
-    return this.layer.frame.width;
+    return Math.round(this.layer.frame.width);
   }
   get height() {
-    return this.layer.frame.height;
+    return Math.round(this.layer.frame.height);
   }
 
   addOverlay(v) {

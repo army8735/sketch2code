@@ -7,7 +7,7 @@ import preCheck from './preCheck';
 import format from './format';
 import flatten from './flatten';
 import overlay from './overlay';
-import linear from './linear';
+import edge from './edge';
 import util from './util';
 import template from './template';
 
@@ -230,19 +230,19 @@ export function edges() {
     let top = util.getTop(layer);
     let pageWidth = top.frame.width;
     let pageHeight = top.frame.height;
-    item.foreground.forEach(data => {
-      data.list.forEach(obj => {
-        let layer = document.getLayerWithID(obj.id);
-        expt(layer, {
-          output: `${directory}`,
-          'use-id-for-name': true,
-          overwriting: true,
-          'save-for-web': true,
-        });
-      });
-    });
-    s = template.linear({
-      title: 'linear',
+    // item.foreground.forEach(data => {
+    //   data.list.forEach(obj => {
+    //     let layer = document.getLayerWithID(obj.id);
+    //     expt(layer, {
+    //       output: `${directory}`,
+    //       'use-id-for-name': true,
+    //       overwriting: true,
+    //       'save-for-web': true,
+    //     });
+    //   });
+    // });
+    s = template.edge({
+      title: 'edge',
       pageWidth,
       pageHeight,
       item,

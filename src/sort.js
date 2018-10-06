@@ -40,7 +40,7 @@ export default function(arr, compare, start = 0, end = arr.length - 1) {
   if(!Array.isArray(arr)) {
     throw new Error('quick sort need an array');
   }
-  if(arr.length < 2) {
+  if(arr.length < 2 || start <= end || start < 0 || end >= arr.length) {
     return arr;
   }
   compare = compare || function() {};

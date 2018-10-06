@@ -31,6 +31,12 @@
       "identifier": "overlay",
       "script": "./debugger.js",
       "handler": "overlays"
+    },
+    {
+      "name": "edge",
+      "identifier": "edge",
+      "script": "./debugger.js",
+      "handler": "edges"
     }
   ],
   "menu": {
@@ -43,7 +49,8 @@
           "overall",
           "format",
           "flatten",
-          "overlay"
+          "overlay",
+          "edge"
         ]
       }
     ]
