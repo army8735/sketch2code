@@ -1,4 +1,4 @@
-function quickSort(arr, compare, begin, end) {
+function quickSort(arr, begin, end, compare) {
   if(begin >= end) {
     return;
   }
@@ -7,7 +7,7 @@ function quickSort(arr, compare, begin, end) {
     if(seq) {
       for(; i < j; j--) {
         if(compare.call(arr, v, arr[j])) {
-          [arr[p], arr[j]] = [arr[j], arr[p]];
+          swap(arr, p, j);
           p = j;
           seq = !seq;
           i++;
@@ -18,7 +18,7 @@ function quickSort(arr, compare, begin, end) {
     else {
       for(; i < j; i++) {
         if(compare.call(arr, arr[i], v)) {
-          [arr[p], arr[j]] = [arr[j], arr[p]];
+          swap(arr, p, i);
           p = i;
           seq = !seq;
           j--;
@@ -27,8 +27,13 @@ function quickSort(arr, compare, begin, end) {
       }
     }
   }
-  quickSort(arr, compare, begin, p - 1);
-  quickSort(arr, compare, p + 1, end);
+  quickSort(arr, begin, p - 1, compare);
+  quickSort(arr, p + 1, end, compare);
+}
+function swap(arr, a, b) {
+  var temp = arr[a];
+  arr[a] = arr[b];
+  arr[b] = temp;
 }
 
 export default function(arr, compare, start = 0, end = arr.length - 1) {
@@ -39,6 +44,6 @@ export default function(arr, compare, start = 0, end = arr.length - 1) {
     return arr;
   }
   compare = compare || function() {};
-  quickSort(arr, compare, start, end);
+  quickSort(arr, start, end, compare);
   return arr;
 };
