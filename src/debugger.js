@@ -230,17 +230,6 @@ export function edges() {
     let top = util.getTop(layer);
     let pageWidth = top.frame.width;
     let pageHeight = top.frame.height;
-    // item.foreground.forEach(data => {
-    //   data.list.forEach(obj => {
-    //     let layer = document.getLayerWithID(obj.id);
-    //     expt(layer, {
-    //       output: `${directory}`,
-    //       'use-id-for-name': true,
-    //       overwriting: true,
-    //       'save-for-web': true,
-    //     });
-    //   });
-    // });
     s = template.edge({
       title: 'edge',
       pageWidth,

@@ -2,6 +2,22 @@
 
 import sort from './sort';
 
+function isCross(h, v) {
+  if(h.y < v.y[0] || h.y > v.y[1]) {
+    return false;
+  }
+  if(v.x < h.x[0] || v.x > h.x[1]) {
+    return false;
+  }
+  if(h.y === v.y[0] || h.y === v.y[1]) {
+    return h.x[0] !== v.x && h.x[1] !== v.x;
+  }
+  if(v.x === h.x[0] || v.x === h.x[1]) {
+    return v.y[0] !== h.y && v.y[1] !== h.y;
+  }
+  return true;
+}
+
 export default function(json) {
   let left;
   let top;
@@ -39,7 +55,7 @@ export default function(json) {
       y: [item.ys, item.ys + item.height],
     });
   });
-  sort(originHorizontal, (a, b) => {
+  sort(originHorizontal, (a, b)   => {
     if(a.y === b.y) {
       return a.x[0] > b.x[0];
     }
@@ -51,15 +67,69 @@ export default function(json) {
     }
     return a.x > b.x;
   });
-  let horizontal = [];
-  let vertical = [];
+  let extendHorizontal = [];
+  let extendVertical = [];
   originHorizontal.forEach(item => {
-    // if(item.x[0])
+    let x0 = left;
+    let x1 = right;
+    if(item.x[0] > left) {
+      for(let i = 0; i < originVertical.length; i++) {
+        if(originVertical[i].x >= item.x[0]) {
+          break;
+        }
+        else if(isCross({ x: [x0, x1], y: item.y }, originVertical[i])) {
+          x0 = originVertical[i].x;
+        }
+      }
+    }
+    if(item.x[1] < right) {
+      for(let i = originVertical.length - 1; i >= 0; i--) {
+        if(originVertical[i].x <= item.x[1]) {
+          break;
+        }
+        else if(isCross({ x: [x0, x1], y: item.y }, originVertical[i])) {
+          x1 = originVertical[i].x;
+          break;
+        }
+      }
+    }
+    extendHorizontal.push({
+      x: [x0, x1],
+      y: item.y,
+    });
+  });
+  originVertical.forEach(item => {
+    let y0 = top;
+    let y1 = bottom;
+    if(item.y[0] > top) {
+      for(let i = 0; i < originHorizontal.length; i++) {
+        if(originHorizontal[i].y >= item.y[0]) {
+          break;
+        }
+        else if(isCross(originHorizontal[i], { x: item.x, y: [y0, y1] })) {
+          y0 = originHorizontal[i].y;
+        }
+      }
+    }
+    if(item.y[1] < bottom) {
+      for(let i = originHorizontal.length - 1; i >= 0; i--) {
+        if(originHorizontal[i].y <= item.y[1]) {
+          break;
+        }
+        else if(isCross(originHorizontal[i], { x: item.x, y: [y0, y1] })) {
+          y1 = originHorizontal[i].y;
+        }
+      }
+    }
+    extendVertical.push({
+      x: item.x,
+      y: [y0, y1],
+    });
   });
   return {
     originHorizontal,
     originVertical,
-    horizontal,
-    vertical,
+    extendHorizontal,
+    extendVertical,
   };
 }

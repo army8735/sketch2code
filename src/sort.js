@@ -36,14 +36,14 @@ function swap(arr, a, b) {
   arr[b] = temp;
 }
 
-export default function(arr, compare, start = 0, end = arr.length - 1) {
+export default function(arr, compare) {
   if(!Array.isArray(arr)) {
     throw new Error('quick sort need an array');
   }
-  if(arr.length < 2 || start <= end || start < 0 || end >= arr.length) {
+  if(arr.length < 2) {
     return arr;
   }
   compare = compare || function() {};
-  quickSort(arr, start, end, compare);
+  quickSort(arr, 0, arr.length - 1, compare);
   return arr;
 };

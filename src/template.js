@@ -342,33 +342,36 @@ body{
 #preview li{
   position:absolute;
 }
-#preview .oh{
-  height:0;
-  border-top:1px solid #00a0e9;
-  opacity:0.5;
-}
-#preview .ov{
-  width:0;
-  border-left:1px solid #e4007f;
-  opacity:0.5;
-}
 #preview .h{
   height:0;
-  border-top:1px dotted #fff100;
+  border-top:1px solid #00a0e9;
 }
 #preview .v{
   width:0;
-  border-left:1px dotted #221815;
+  border-left:1px solid #e4007f;
+}
+#preview:first-child{
+  margin-right:10px;
 }
 </style>
 </head>
 <body>
 <ul id="preview">
   ${data.item.originHorizontal.map(data => {
-    return `<li class="oh" style="left:${data.x[0]}px;top:${data.y}px;width:${data.x[1]-data.x[0]}px"></li>`;
+    return `<li class="h" style="left:${data.x[0]}px;top:${data.y}px;width:${data.x[1]-data.x[0]}px"
+      title="${data.x[0]}:${data.x[1]}|${data.y}"></li>`;
   }).join('\n')}
   ${data.item.originVertical.map(data => {
-    return `<li class="ov" style="left:${data.x}px;top:${data.y[0]}px;height:${data.y[1] - data.y[0]}px"></li>`;
+    return `<li class="v" style="left:${data.x}px;top:${data.y[0]}px;height:${data.y[1] - data.y[0]}px"
+      title="${data.x}|${data.y[0]}:${data.y[1]}"></li>`;
+  }).join('\n')}
+</ul>
+<ul id="preview">
+  ${data.item.extendHorizontal.map(data => {
+    return `<li class="h" style="left:${data.x[0]}px;top:${data.y}px;width:${data.x[1] - data.x[0]}px"></li>`;
+  }).join('\n')}
+  ${data.item.extendVertical.map(data => {
+    return `<li class="v" style="left:${data.x}px;top:${data.y[0]}px;height:${data.y[1] - data.y[0]}px"></li>`;
   }).join('\n')}
 </ul>
 </body>
