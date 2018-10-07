@@ -94,6 +94,7 @@ input{
 }
 body{
   display:flex;
+  flex-wrap:wrap;
   background:#FFF;
 }
 #preview{
@@ -331,10 +332,12 @@ input{
 }
 body{
   display:flex;
+  flex-wrap:wrap;
   background:#FFF;
 }
 #preview{
   position:relative;
+  margin:0 10px 10px 0;
   width:${data.pageWidth}px;
   height:${data.pageHeight}px;
   border:1px dotted #CCC;
@@ -350,30 +353,64 @@ body{
   width:0;
   border-left:1px solid #e4007f;
 }
-#preview:first-child{
-  margin-right:10px;
+#preview .h.true{
+  border-top:1px dotted #00a0e9;
+}
+#preview .v.true{
+  border-left:1px dotted #e4007f;
+}
+#preview .p{
+  width:4px;
+  height:4px;
+  background:#000;
+  border:none;
+  border-radius:100%;
+  transform:translate(-50%, -50%);
 }
 </style>
 </head>
 <body>
 <ul id="preview">
   ${data.item.originHorizontal.map(data => {
-    return `<li class="h" style="left:${data.x[0]}px;top:${data.y}px;width:${data.x[1]-data.x[0]}px"
+    return `<li class="h ${data.st}" style="left:${data.x[0]}px;top:${data.y}px;width:${data.x[1]-data.x[0]}px"
       title="${data.x[0]}:${data.x[1]}|${data.y}"></li>`;
   }).join('\n')}
   ${data.item.originVertical.map(data => {
-    return `<li class="v" style="left:${data.x}px;top:${data.y[0]}px;height:${data.y[1] - data.y[0]}px"
+    return `<li class="v ${data.st}" style="left:${data.x}px;top:${data.y[0]}px;height:${data.y[1] - data.y[0]}px"
       title="${data.x}|${data.y[0]}:${data.y[1]}"></li>`;
   }).join('\n')}
 </ul>
 <ul id="preview">
   ${data.item.extendHorizontal.map(data => {
-    return `<li class="h" style="left:${data.x[0]}px;top:${data.y}px;width:${data.x[1] - data.x[0]}px"
-      title="${data.x[0]}:${data.x[1]}|${data.y}" alt="${data.st}"></li>`;
+    return `<li class="h ${data.st}" style="left:${data.x[0]}px;top:${data.y}px;width:${data.x[1] - data.x[0]}px"
+      title="${data.x[0]}:${data.x[1]}|${data.y}" alt="${data.st}|${data.i}"></li>`;
   }).join('\n')}
   ${data.item.extendVertical.map(data => {
+    return `<li class="v ${data.st}" style="left:${data.x}px;top:${data.y[0]}px;height:${data.y[1] - data.y[0]}px"
+      title="${data.x}|${data.y[0]}:${data.y[1]}" alt="${data.st}|${data.i}"></li>`;
+  }).join('\n')}
+</ul>
+<ul id="preview">
+  ${data.item.mergeHorizontal.map(data => {
+    return `<li class="h" style="left:${data.x[0]}px;top:${data.y}px;width:${data.x[1] - data.x[0]}px"
+      title="${data.x[0]}:${data.x[1]}|${data.y}" alt="${data.st}|${data.i}"></li>`;
+  }).join('\n')}
+  ${data.item.mergeVertical.map(data => {
     return `<li class="v" style="left:${data.x}px;top:${data.y[0]}px;height:${data.y[1] - data.y[0]}px"
-      title="${data.x}|${data.y[0]}:${data.y[1]}" alt="${data.st}"></li>`;
+      title="${data.x}|${data.y[0]}:${data.y[1]}" alt="${data.st}|${data.i}"></li>`;
+  }).join('\n')}
+  ${data.item.center.map(data => {
+    return `<li class="p" style="left:${data.x}px;top:${data.y}px"></li>`;
+  }).join('\n')}
+</ul>
+<ul id="preview">
+  ${data.item.unionHorizontal.map(data => {
+    return `<li class="h" style="left:${data.x[0]}px;top:${data.y}px;width:${data.x[1] - data.x[0]}px"
+      title="${data.x[0]}:${data.x[1]}|${data.y}" alt="${data.st}|${data.i}"></li>`;
+  }).join('\n')}
+  ${data.item.unionVertical.map(data => {
+    return `<li class="v" style="left:${data.x}px;top:${data.y[0]}px;height:${data.y[1] - data.y[0]}px"
+      title="${data.x}|${data.y[0]}:${data.y[1]}" alt="${data.st}|${data.i}"></li>`;
   }).join('\n')}
 </ul>
 </body>

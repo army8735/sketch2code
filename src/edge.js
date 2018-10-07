@@ -1,5 +1,6 @@
 'use strict';
 
+import lodash from 'lodash';
 import sort from './sort';
 
 function isCross(h, v) {
@@ -42,21 +43,25 @@ export default function(json) {
       x: [item.xs, item.xs + item.width],
       y: item.ys,
       st: true,
+      i,
     });
     originHorizontal.push({
       x: [item.xs, item.xs + item.width],
       y: item.ys + item.height,
       st: false,
+      i,
     });
     originVertical.push({
       x: item.xs,
       y: [item.ys, item.ys + item.height],
       st: true,
+      i,
     });
     originVertical.push({
       x: item.xs + item.width,
       y: [item.ys, item.ys + item.height],
       st: false,
+      i,
     });
   });
   sort(originHorizontal, (a, b)   => {
@@ -116,6 +121,7 @@ export default function(json) {
       x: [x0, x1],
       y: item.y,
       st: item.st,
+      i: item.i,
     });
   });
   hash = new Map();
@@ -161,10 +167,148 @@ export default function(json) {
       x: item.x,
       y: [y0, y1],
       st: item.st,
+      i: item.i,
     });
   });
   let mergeHorizontal = [];
   let mergeVertical = [];
+  let xHash = new Map();
+  let yHash = new Map();
+  for(let i = 0; i < extendHorizontal.length - 1; i++) {
+    let a = extendHorizontal[i];
+    let b = extendHorizontal[i + 1];
+    a = lodash.cloneDeep(a);
+    if(a.i !== b.i && a.st !== b.st && a.x[0] === b.x[0] && a.x[1] === b.x[1]) {
+      i++;
+      let y = (a.y + b.y) >> 1;
+      let arr;
+      if(xHash.has(a.y)) {
+        arr = xHash.get(a.y);
+      }
+      else {
+        arr = [];
+        xHash.set(a.y, arr);
+      }
+      arr.push({
+        y,
+        x: a.x,
+      });
+      a.y = y;
+      mergeHorizontal.push(a);
+      let arr2;
+      if(xHash.has(b.y)) {
+        arr2 = xHash.get(b.y);
+      }
+      else {
+        arr2 = [];
+        xHash.set(b.y, arr2);
+      }
+      arr2.push({
+        y,
+        x: b.x,
+      });
+    }
+    else {
+      mergeHorizontal.push(a);
+    }
+  }
+  mergeHorizontal.push(extendHorizontal[extendHorizontal.length - 1]);
+  for(let i = 0; i < extendVertical.length - 1; i++) {
+    let a = extendVertical[i];
+    let b = extendVertical[i + 1];
+    a = lodash.cloneDeep(a);
+    if(a.i !== b.i && a.st !== b.st && a.y[0] === b.y[0] && a.y[1] === b.y[1]) {
+      i++;
+      let x = (a.x + b.x) >> 1;
+      let arr;
+      if(yHash.has(a.x)) {
+        arr = yHash.get(a.x);
+      }
+      else {
+        arr = [];
+        yHash.set(a.x, arr);
+      }
+      arr.push({
+        x,
+        y: a.y,
+      });
+      a.x = x;
+      mergeVertical.push(a);
+      let arr2;
+      if(yHash.has(b.x)) {
+        arr2 = yHash.get(b.x);
+      }
+      else {
+        arr2 = [];
+        yHash.set(b.x, arr2);
+      }
+      arr2.push({
+        x,
+        y: a.y,
+      });
+    }
+    else {
+      mergeVertical.push(a);
+    }
+  }
+  mergeVertical.push(extendVertical[extendVertical.length - 1]);
+  mergeHorizontal.forEach(item => {
+    if(yHash.has(item.x[0])) {
+      let arr = yHash.get(item.x[0]);
+      for(let i = 0; i < arr.length; i++) {
+        let o = arr[i];
+        if(item.y >= o.y[0] && item.y <= o.y[1]) {
+          item.x[0] = o.x;
+          break;
+        }
+      }
+    }
+    if(yHash.has(item.x[1])) {
+      let arr = yHash.get(item.x[1]);
+      for(let i = 0; i < arr.length; i++) {
+        let o = arr[i];
+        if(item.y >= o.y[0] && item.y <= o.y[1]) {
+          item.x[1] = o.x;
+          break;
+        }
+      }
+    }
+  });
+  mergeVertical.forEach(item => {
+    if(xHash.has(item.y[0])) {
+      let arr = xHash.get(item.y[0]);
+      for(let i = 0; i < arr.length; i++) {
+        let o = arr[i];
+        if(item.x >= o.x[0] && item.x <= o.x[1]) {
+          item.y[0] = o.y;
+          break;
+        }
+      }
+    }
+    if(xHash.has(item.y[1])) {
+      let arr = xHash.get(item.y[1]);
+      for(let i = 0; i < arr.length; i++) {
+        let o = arr[i];
+        if(item.x >= o.x[0] && item.x <= o.x[1]) {
+          item.y[1] = o.y;
+          break;
+        }
+      }
+    }
+  });
+  let center = [];
+  json.forEach(item => {
+    center.push({
+      x: item.xs + (item.width >> 1),
+      y: item.ys + (item.height >> 1),
+    });
+  });
+  let unionHorizontal = [];
+  let unionVertical = [];
+  for(let i = 0; i < mergeHorizontal.length - 1; i++) {
+    let a = mergeHorizontal[i];
+    let b = mergeHorizontal[i + 1];
+  }
   return {
     originHorizontal,
     originVertical,
@@ -172,5 +316,8 @@ export default function(json) {
     extendVertical,
     mergeHorizontal,
     mergeVertical,
+    center,
+    unionHorizontal,
+    unionVertical,
   };
 }
