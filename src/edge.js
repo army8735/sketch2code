@@ -41,18 +41,22 @@ export default function(json) {
     originHorizontal.push({
       x: [item.xs, item.xs + item.width],
       y: item.ys,
+      st: true,
     });
     originHorizontal.push({
       x: [item.xs, item.xs + item.width],
       y: item.ys + item.height,
+      st: false,
     });
     originVertical.push({
       x: item.xs,
       y: [item.ys, item.ys + item.height],
+      st: true,
     });
     originVertical.push({
       x: item.xs + item.width,
       y: [item.ys, item.ys + item.height],
+      st: false,
     });
   });
   sort(originHorizontal, (a, b)   => {
@@ -69,67 +73,104 @@ export default function(json) {
   });
   let extendHorizontal = [];
   let extendVertical = [];
+  let hash = new Map();
   originHorizontal.forEach(item => {
     let x0 = left;
     let x1 = right;
     if(item.x[0] > left) {
-      for(let i = 0; i < originVertical.length; i++) {
-        if(originVertical[i].x >= item.x[0]) {
+      for(let i = originVertical.length - 1; i >= 0; i--) {
+        let l = originVertical[i];
+        if(l.x < item.x[0]) {
+          for(let j = i; j >= 0; j--) {
+            let l = originVertical[j];
+            x0 = l.x;
+            if(isCross({ x: [x0, x1], y: item.y }, l)) {
+              break;
+            }
+          }
           break;
-        }
-        else if(isCross({ x: [x0, x1], y: item.y }, originVertical[i])) {
-          x0 = originVertical[i].x;
         }
       }
     }
     if(item.x[1] < right) {
-      for(let i = originVertical.length - 1; i >= 0; i--) {
-        if(originVertical[i].x <= item.x[1]) {
-          break;
-        }
-        else if(isCross({ x: [x0, x1], y: item.y }, originVertical[i])) {
-          x1 = originVertical[i].x;
+      for(let i = 0; i < originVertical.length; i++) {
+        let l = originVertical[i];
+        if(l.x > item.x[1]) {
+          for(let j = i; j < originVertical.length; j++) {
+            let l = originVertical[j];
+            x1 = l.x;
+            if(isCross({ x: [x0, x1], y: item.y }, l)) {
+              break;
+            }
+          }
           break;
         }
       }
     }
+    let key = x0 + ':' + x1 + '|' + item.y + '|' + item.st;
+    if(hash.has(key)) {
+      return;
+    }
+    hash.set(key, true);
     extendHorizontal.push({
       x: [x0, x1],
       y: item.y,
+      st: item.st,
     });
   });
-  originVertical.forEach(item => {
+  hash = new Map();
+  originVertical.forEach((item, i) => {
     let y0 = top;
     let y1 = bottom;
     if(item.y[0] > top) {
-      for(let i = 0; i < originHorizontal.length; i++) {
-        if(originHorizontal[i].y >= item.y[0]) {
+      for(let i = originHorizontal.length - 1; i >= 0; i--) {
+        let l = originHorizontal[i];
+        if(l.y < item.y[0]) {
+          for(let j = i; j >= 0; j--) {
+            let l = originHorizontal[j];
+            y0 = l.y;
+            if(isCross(l, { x: item.x, y: [y0, y1] })) {
+              break;
+            }
+          }
           break;
-        }
-        else if(isCross(originHorizontal[i], { x: item.x, y: [y0, y1] })) {
-          y0 = originHorizontal[i].y;
         }
       }
     }
     if(item.y[1] < bottom) {
-      for(let i = originHorizontal.length - 1; i >= 0; i--) {
-        if(originHorizontal[i].y <= item.y[1]) {
+      for(let i = 0; i < originHorizontal.length; i++) {
+        let l = originHorizontal[i];
+        if(l.y > item.y[1]) {
+          for(let j = i; j < originHorizontal.length; j++) {
+            let l = originHorizontal[j];
+            y1 = l.y;
+            if(isCross(l, { x: item.x, y: [y0, y1] })) {
+              break;
+            }
+          }
           break;
-        }
-        else if(isCross(originHorizontal[i], { x: item.x, y: [y0, y1] })) {
-          y1 = originHorizontal[i].y;
         }
       }
     }
+    let key = item.x + '|' + y0 + ':' + y1 + '|' + item.st;
+    if(hash.has(key)) {
+      return;
+    }
+    hash.set(key, true);
     extendVertical.push({
       x: item.x,
       y: [y0, y1],
+      st: item.st,
     });
   });
+  let mergeHorizontal = [];
+  let mergeVertical = [];
   return {
     originHorizontal,
     originVertical,
     extendHorizontal,
     extendVertical,
+    mergeHorizontal,
+    mergeVertical,
   };
 }

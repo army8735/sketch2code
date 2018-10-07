@@ -368,10 +368,12 @@ body{
 </ul>
 <ul id="preview">
   ${data.item.extendHorizontal.map(data => {
-    return `<li class="h" style="left:${data.x[0]}px;top:${data.y}px;width:${data.x[1] - data.x[0]}px"></li>`;
+    return `<li class="h" style="left:${data.x[0]}px;top:${data.y}px;width:${data.x[1] - data.x[0]}px"
+      title="${data.x[0]}:${data.x[1]}|${data.y}" alt="${data.st}"></li>`;
   }).join('\n')}
   ${data.item.extendVertical.map(data => {
-    return `<li class="v" style="left:${data.x}px;top:${data.y[0]}px;height:${data.y[1] - data.y[0]}px"></li>`;
+    return `<li class="v" style="left:${data.x}px;top:${data.y[0]}px;height:${data.y[1] - data.y[0]}px"
+      title="${data.x}|${data.y[0]}:${data.y[1]}" alt="${data.st}"></li>`;
   }).join('\n')}
 </ul>
 </body>
