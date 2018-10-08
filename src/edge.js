@@ -19,6 +19,16 @@ function isCross(h, v) {
   return true;
 }
 
+function isEmpty(top, right, bottom, left, center) {
+  for(let i = 0; i < center.length; i++) {
+    let item = center[i];
+    if(item.x >= left && item.x <= right && item.y >= top && item.y <= bottom) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export default function(json) {
   let left;
   let top;
@@ -303,12 +313,83 @@ export default function(json) {
       y: item.ys + (item.height >> 1),
     });
   });
-  let unionHorizontal = [];
-  let unionVertical = [];
-  for(let i = 0; i < mergeHorizontal.length - 1; i++) {
-    let a = mergeHorizontal[i];
-    let b = mergeHorizontal[i + 1];
+  let unionHorizontal = lodash.cloneDeep(mergeHorizontal);
+  let unionVertical = lodash.cloneDeep(mergeVertical);
+  for(let i = 0; i < unionHorizontal.length - 1; i++) {
+    let a = unionHorizontal[i];
+    for(let j = i + 1; j < unionHorizontal.length; j++) {
+      let b = unionHorizontal[j];
+      // 纵轴不相交跳过
+      if(b.x[1] <= a.x[0] || b.x[0] >= a.x[1]) {
+        continue;
+      }
+      // 遍历竖线，除边线外相交分割的尝试合并
+      let list = [];
+      unionVertical.forEach(l => {
+        if(l.x >= a.x[0] && l.x >= b.x[0] && l.x <= a.x[1] && l.x <= b.x[1] && l.y[0] <= a.y && l.y[1] >= b.y) {
+          list.push(l);
+        }
+      });
+      for(let k = 0; k < list.length - 2; k++) {
+        let c = list[k];
+        let d = list[k + 1];
+        let e = list[k + 2];
+        let left = isEmpty(a.y, d.x, b.y, c.x, center);
+        let right = isEmpty(a.y, e.x, b.y, d.x, center);
+        if(left || right) {
+          // 刚好高度相符分割取消此线
+          if(d.y[0] === a.y && d.y[1] === b.y) {
+            d.ignore = true;
+            list.splice(k + 1, 1);
+            k--;
+          }
+        }
+      }
+      // 提前跳出，因为a、b等长后续不会再有线段能和a组合成矩形
+      if(b.x[0] === a.x[0] && b.x[1] === a.x[1]) {
+        break;
+      }
+    }
   }
+  for(let i = 0; i < unionVertical.length - 1; i++) {
+    let a = unionVertical[i];
+    for(let j = i + 1; j < unionVertical.length; j++) {
+      let b = unionVertical[j];
+      // 横轴不相交跳过
+      if(b.y[1] <= a.y[0] || b.y[0] >= a.y[1]) {
+        continue;
+      }
+      let list = [];
+      unionHorizontal.forEach(l => {
+        if(l.y >= a.y[0] && l.y >= b.y[0] && l.y <= a.y[1] && l.y <= b.y[1] && l.x[0] <= a.x && l.x[1] >= b.x) {
+          list.push(l);
+        }
+      });
+      for(let k = 0; k < list.length - 2; k++) {
+        let c = list[k];
+        let d = list[k + 1];
+        let e = list[k + 2];
+        let left = isEmpty(c.y, b.x, d.y, a.x, center);
+        let right = isEmpty(d.y, b.x, e.y, a.x, center);
+        if(left || right) {
+          if(d.x[0] === a.x && d.x[1] === b.x) {
+            d.ignore = true;
+            list.splice(k + 1, 1);
+            k--;
+          }
+        }
+      }
+      if(b.y[0] === a.y[0] && b.y[1] === a.y[1]) {
+        break;
+      }
+    }
+  }
+  unionHorizontal = unionHorizontal.filter(item => {
+    return !item.ignore;
+  });
+  unionVertical = unionVertical.filter(item => {
+    return !item.ignore;
+  });
   return {
     originHorizontal,
     originVertical,
