@@ -3,37 +3,11 @@
 import lodash from 'lodash';
 import sort from './sort';
 
-function isCross(h, v) {
-  if(h.y < v.y[0] || h.y > v.y[1]) {
-    return false;
-  }
-  if(v.x < h.x[0] || v.x > h.x[1]) {
-    return false;
-  }
-  if(h.y === v.y[0] || h.y === v.y[1]) {
-    return h.x[0] !== v.x && h.x[1] !== v.x;
-  }
-  if(v.x === h.x[0] || v.x === h.x[1]) {
-    return v.y[0] !== h.y && v.y[1] !== h.y;
-  }
-  return true;
-}
-
-function isEmpty(top, right, bottom, left, center) {
-  for(let i = 0; i < center.length; i++) {
-    let item = center[i];
-    if(item.x >= left && item.x <= right && item.y >= top && item.y <= bottom) {
-      return false;
-    }
-  }
-  return true;
-}
-
-export default function(json) {
-  let left;
-  let top;
-  let right;
-  let bottom;
+function getOrigin(json) {
+  let left = -1;
+  let top = -1;
+  let right = -1;
+  let bottom = -1;
   let originHorizontal = [];
   let originVertical = [];
   json.forEach((item, i) => {
@@ -86,6 +60,17 @@ export default function(json) {
     }
     return a.x > b.x;
   });
+  return {
+    top,
+    right,
+    bottom,
+    left,
+    originHorizontal,
+    originVertical,
+  };
+}
+
+function getExtend(top, right, bottom, left, originHorizontal, originVertical) {
   let extendHorizontal = [];
   let extendVertical = [];
   let hash = new Map();
@@ -135,7 +120,7 @@ export default function(json) {
     });
   });
   hash = new Map();
-  originVertical.forEach((item, i) => {
+  originVertical.forEach(item => {
     let y0 = top;
     let y1 = bottom;
     if(item.y[0] > top) {
@@ -180,6 +165,13 @@ export default function(json) {
       i: item.i,
     });
   });
+  return {
+    extendHorizontal,
+    extendVertical,
+  };
+}
+
+function getMerge(extendHorizontal, extendVertical) {
   let mergeHorizontal = [];
   let mergeVertical = [];
   let xHash = new Map();
@@ -306,15 +298,49 @@ export default function(json) {
       }
     }
   });
-  let center = [];
-  json.forEach(item => {
-    center.push({
-      x: item.xs + (item.width >> 1),
-      y: item.ys + (item.height >> 1),
-    });
-  });
+  return {
+    mergeHorizontal,
+    mergeVertical,
+  };
+}
+
+function getUnion(mergeHorizontal, mergeVertical, center) {
   let unionHorizontal = lodash.cloneDeep(mergeHorizontal);
   let unionVertical = lodash.cloneDeep(mergeVertical);
+  let h = [];
+  let v = [];
+  let last = null;
+  let temp = null;
+  unionHorizontal.forEach(item => {
+    if(last === null) {
+      temp = [item];
+    }
+    else if(last.y !== item.y) {
+      h.push(temp);
+      temp = [item];
+    }
+    else {
+      temp.push(item);
+    }
+    last = item;
+  });
+  h.push(temp);
+  last = null;
+  temp = null;
+  unionVertical.forEach(item => {
+    if(last === null) {
+      temp = [item];
+    }
+    else if(last.x !== item.x) {
+      v.push(temp);
+      temp = [item];
+    }
+    else {
+      temp.push(item);
+    }
+    last = item;
+  });
+  v.push(temp);
   for(let i = 0; i < unionHorizontal.length - 1; i++) {
     let a = unionHorizontal[i];
     for(let j = i + 1; j < unionHorizontal.length; j++) {
@@ -390,6 +416,50 @@ export default function(json) {
   unionVertical = unionVertical.filter(item => {
     return !item.ignore;
   });
+  return {
+    unionHorizontal,
+    unionVertical,
+  };
+}
+
+function isCross(h, v) {
+  if(h.y < v.y[0] || h.y > v.y[1]) {
+    return false;
+  }
+  if(v.x < h.x[0] || v.x > h.x[1]) {
+    return false;
+  }
+  if(h.y === v.y[0] || h.y === v.y[1]) {
+    return h.x[0] !== v.x && h.x[1] !== v.x;
+  }
+  if(v.x === h.x[0] || v.x === h.x[1]) {
+    return v.y[0] !== h.y && v.y[1] !== h.y;
+  }
+  return true;
+}
+
+function isEmpty(top, right, bottom, left, center) {
+  for(let i = 0; i < center.length; i++) {
+    let item = center[i];
+    if(item.x >= left && item.x <= right && item.y >= top && item.y <= bottom) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export default function(json) {
+  let { top, right, bottom, left, originHorizontal, originVertical } = getOrigin(json);
+  let { extendHorizontal, extendVertical } = getExtend(top, right, bottom, left, originHorizontal, originVertical);
+  let { mergeHorizontal, mergeVertical } = getMerge(extendHorizontal, extendVertical);
+  let center = [];
+  json.forEach(item => {
+    center.push({
+      x: item.xs + (item.width >> 1),
+      y: item.ys + (item.height >> 1),
+    });
+  });
+  let { unionHorizontal, unionVertical } = getUnion(mergeHorizontal, mergeVertical, center);
   return {
     originHorizontal,
     originVertical,
