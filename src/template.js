@@ -359,10 +359,18 @@ body{
 #preview .v.true{
   border-left:1px dotted #e4007f;
 }
-#preview .p{
+#preview .c{
   width:4px;
   height:4px;
   background:#000;
+  border:none;
+  border-radius:100%;
+  transform:translate(-50%, -50%);
+}
+#preview .p{
+  width:4px;
+  height:4px;
+  background:#6EA;
   border:none;
   border-radius:100%;
   transform:translate(-50%, -50%);
@@ -400,6 +408,9 @@ body{
       title="${data.x}|${data.y[0]}:${data.y[1]}" alt="${data.st}|${data.i}"></li>`;
   }).join('\n')}
   ${data.item.center.map(data => {
+    return `<li class="c" style="left:${data.x}px;top:${data.y}px"></li>`;
+  }).join('\n')}
+  ${data.item.point.map(data => {
     return `<li class="p" style="left:${data.x}px;top:${data.y}px"></li>`;
   }).join('\n')}
 </ul>
@@ -413,7 +424,7 @@ body{
       title="${data.x}|${data.y[0]}:${data.y[1]}" alt="${data.st}|${data.i}"></li>`;
   }).join('\n')}
   ${data.item.center.map(data => {
-    return `<li class="p" style="left:${data.x}px;top:${data.y}px"></li>`;
+    return `<li class="c" style="left:${data.x}px;top:${data.y}px"></li>`;
   }).join('\n')}
 </ul>
 </body>
