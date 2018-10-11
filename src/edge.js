@@ -455,133 +455,47 @@ function getUnion(mergeHorizontal, mergeVertical, center, point) {
       }
     }
   }
-  console.log(square.length, square);
-  // 按行分组矩形
-  sort(square, (a, b) => {
-    if(a.y1 === b.y1) {
-      return a.x1 > b.x1;
+  // 不停尝试合并直到无法再合并为止
+  do {
+    let fin = true;
+    for(let i = 1; i < unionHorizontal.length - 1; i++) {
+      let l = unionHorizontal[i];
+      let pair = getPairSquare(square, l, true);
+      if(!pair) {
+        continue;
+      }
+      let a = square[pair[0]];
+      let b = square[pair[1]];
+      if(isEmpty(a.y1, a.x4, a.y4, a.x1, center) || isEmpty(b.y1, b.x4, b.y4, b.x1, center)) {
+        a.y4 = b.y4;
+        square.splice(pair[1], 1);
+        unionVertical.splice(i--, 1);
+        fin = false;
+      }
     }
-    return a.y1 > b.y1;
-  });
-  let hs = [];
-  last = null;
-  square.forEach(s => {
-    if(last === null) {
-      temp = [s];
+    for(let i = 1; i < unionVertical.length - 1; i++) {
+      let l = unionVertical[i];
+      let pair = getPairSquare(square, l, false);
+      if(!pair) {
+        continue;
+      }
+      let a = square[pair[0]];
+      let b = square[pair[1]];
+      if(isEmpty(a.y1, a.x4, a.y4, a.x1, center) || isEmpty(b.y1, b.x4, b.y4, b.x1, center)) {
+        a.x4 = b.x4;
+        square.splice(pair[1], 1);
+        unionVertical.splice(i--, 1);
+        fin = false;
+      }
     }
-    else if(s.y1 === last.y1) {
-      temp.push(s);
+    if(fin) {
+      break;
     }
-    else {
-      hs.push(temp);
-      temp = [s];
-    }
-    last = s;
-  });
-  hs.push(temp);
-  // 按列分组矩形
-  copy = lodash.cloneDeep(square);
-  sort(copy, (a, b) => {
-    if(a.x1 === b.x1) {
-      return a.y1 > b.y1;
-    }
-    return a.x1 > b.x1;
-  });
-  let vs = [];
-  last = null;
-  copy.forEach(s => {
-    if(last === null) {
-      temp = [s];
-    }
-    else if(s.x1 === last.x1) {
-      temp.push(s);
-    }
-    else {
-      vs.push(temp);
-      temp = [s];
-    }
-    last = s;
-  });
-  vs.push(temp);
-  // for(let i = 0; i < unionHorizontal.length - 1; i++) {
-  //   let a = unionHorizontal[i];
-  //   for(let j = i + 1; j < unionHorizontal.length; j++) {
-  //     let b = unionHorizontal[j];
-  //     // 纵轴不相交跳过
-  //     if(b.x[1] <= a.x[0] || b.x[0] >= a.x[1]) {
-  //       continue;
-  //     }
-  //     // 遍历竖线，除边线外相交分割的尝试合并
-  //     let list = [];
-  //     unionVertical.forEach(l => {
-  //       if(l.x >= a.x[0] && l.x >= b.x[0] && l.x <= a.x[1] && l.x <= b.x[1] && l.y[0] <= a.y && l.y[1] >= b.y) {
-  //         list.push(l);
-  //       }
-  //     });
-  //     for(let k = 0; k < list.length - 2; k++) {
-  //       let c = list[k];
-  //       let d = list[k + 1];
-  //       let e = list[k + 2];
-  //       let left = isEmpty(a.y, d.x, b.y, c.x, center);
-  //       let right = isEmpty(a.y, e.x, b.y, d.x, center);
-  //       if(left || right) {
-  //         // 刚好高度相符分割取消此线
-  //         if(d.y[0] === a.y && d.y[1] === b.y) {
-  //           d.ignore = true;
-  //           list.splice(k + 1, 1);
-  //           k--;
-  //         }
-  //       }
-  //     }
-  //     // 提前跳出，因为a、b等长后续不会再有线段能和a组合成矩形
-  //     if(b.x[0] === a.x[0] && b.x[1] === a.x[1]) {
-  //       break;
-  //     }
-  //   }
-  // }
-  // for(let i = 0; i < unionVertical.length - 1; i++) {
-  //   let a = unionVertical[i];
-  //   for(let j = i + 1; j < unionVertical.length; j++) {
-  //     let b = unionVertical[j];
-  //     // 横轴不相交跳过
-  //     if(b.y[1] <= a.y[0] || b.y[0] >= a.y[1]) {
-  //       continue;
-  //     }
-  //     let list = [];
-  //     unionHorizontal.forEach(l => {
-  //       if(l.y >= a.y[0] && l.y >= b.y[0] && l.y <= a.y[1] && l.y <= b.y[1] && l.x[0] <= a.x && l.x[1] >= b.x) {
-  //         list.push(l);
-  //       }
-  //     });
-  //     for(let k = 0; k < list.length - 2; k++) {
-  //       let c = list[k];
-  //       let d = list[k + 1];
-  //       let e = list[k + 2];
-  //       let left = isEmpty(c.y, b.x, d.y, a.x, center);
-  //       let right = isEmpty(d.y, b.x, e.y, a.x, center);
-  //       if(left || right) {
-  //         if(d.x[0] === a.x && d.x[1] === b.x) {
-  //           d.ignore = true;
-  //           list.splice(k + 1, 1);
-  //           k--;
-  //         }
-  //       }
-  //     }
-  //     if(b.y[0] === a.y[0] && b.y[1] === a.y[1]) {
-  //       break;
-  //     }
-  //   }
-  // }
-  // unionHorizontal = unionHorizontal.filter(item => {
-  //   return !item.ignore;
-  // });
-  // unionVertical = unionVertical.filter(item => {
-  //   return !item.ignore;
-  // });
+  }
+  while(true);
   return {
     unionHorizontal,
     unionVertical,
-    point,
   };
 }
 
@@ -597,16 +511,6 @@ function isCross(h, v) {
   }
   if(v.x === h.x[0] || v.x === h.x[1]) {
     return v.y[0] !== h.y && v.y[1] !== h.y;
-  }
-  return true;
-}
-
-function isCrossOrMeet(h, v) {
-  if(h.y < v.y[0] || h.y > v.y[1]) {
-    return false;
-  }
-  if(v.x < h.x[0] || v.x > h.x[1]) {
-    return false;
   }
   return true;
 }
@@ -676,6 +580,39 @@ function isEmpty(top, right, bottom, left, center) {
     }
   }
   return true;
+}
+
+function getPairSquare(square, l, hOrV) {
+  if(hOrV) {
+    for(let i = 0; i < square.length; i++) {
+      let a = square[i];
+      if(a.y4 === l.y && a.x1 === l.x[0] && a.x4 === l.x[1]) {
+        for(let j = 0; j < square.length && j !== i; j++) {
+          let b = square[i];
+          if(b.y1 === l.y && b.x1 === l.x[0] && b.x4 === l.x[1]) {
+            return [i, j];
+          }
+        }
+      }
+    }
+  }
+  else {
+    for(let i = 0; i < square.length; i++) {
+      let a = square[i];
+      if(a.x4 === l.x && a.y1 === l.y[0] && a.y4 === l.y[1]) {
+        for(let j = 0; j < square.length; j++) {
+          if(j === i) {
+            continue;
+          }
+          let b = square[j];
+          if(b.x1 === l.x && b.y1 === l.y[0] && b.y4 === l.y[1]) {
+            return [i, j];
+          }
+        }
+      }
+    }
+  }
+  return null;
 }
 
 export default function(json) {
