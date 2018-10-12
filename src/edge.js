@@ -458,21 +458,6 @@ function getUnion(mergeHorizontal, mergeVertical, center, point) {
   // 不停尝试合并直到无法再合并为止
   do {
     let fin = true;
-    for(let i = 1; i < unionHorizontal.length - 1; i++) {
-      let l = unionHorizontal[i];
-      let pair = getPairSquare(square, l, true);
-      if(!pair) {
-        continue;
-      }
-      let a = square[pair[0]];
-      let b = square[pair[1]];
-      if(isEmpty(a.y1, a.x4, a.y4, a.x1, center) || isEmpty(b.y1, b.x4, b.y4, b.x1, center)) {
-        a.y4 = b.y4;
-        square.splice(pair[1], 1);
-        unionVertical.splice(i--, 1);
-        fin = false;
-      }
-    }
     for(let i = 1; i < unionVertical.length - 1; i++) {
       let l = unionVertical[i];
       let pair = getPairSquare(square, l, false);
@@ -488,14 +473,111 @@ function getUnion(mergeHorizontal, mergeVertical, center, point) {
         fin = false;
       }
     }
+    for(let i = 1; i < unionHorizontal.length - 1; i++) {
+      let l = unionHorizontal[i];
+      let pair = getPairSquare(square, l, true);
+      if(!pair) {
+        continue;
+      }
+      let a = square[pair[0]];
+      let b = square[pair[1]];
+      if(isEmpty(a.y1, a.x4, a.y4, a.x1, center) || isEmpty(b.y1, b.x4, b.y4, b.x1, center)) {
+        a.y4 = b.y4;
+        square.splice(pair[1], 1);
+        unionHorizontal.splice(i--, 1);
+        fin = false;
+      }
+    }
+    if(fin) {
+      break;
+    }
+  }
+  while(true);
+  let unionPoint = [];
+  unionHorizontal.forEach(h => {
+    unionVertical.forEach(v => {
+      let p = getPoint(h, v);
+      if(p) {
+        unionPoint.push(p);
+      }
+    });
+  });
+  return {
+    unionHorizontal,
+    unionVertical,
+    unionPoint,
+    square,
+  };
+}
+
+function getFinal(unionHorizontal, unionVertical, center, square) {
+  let finalHorizontal = lodash.cloneDeep(unionHorizontal);
+  let finalVertical = lodash.cloneDeep(unionVertical);
+  // 再次尝试合并，此次只考虑联合矩形
+  do {
+    let fin = true;
+    for(let i = 1; i < finalVertical.length - 1; i++) {
+      let l = finalVertical[i];
+      let pair = getPairGroupSquare(square, l, false);
+      if(!pair) {
+        continue;
+      }
+      let a = pair[0].map((item, i) => {
+        if(i) {
+          square[item].ignore = true;
+        }
+        return square[item];
+      });
+      let b = pair[1].map((item, i) => {
+        if(i) {
+          square[item].ignore = true;
+        }
+        return square[item];
+      });
+      if(isEmpty(a[0].y1, a[0].x4, a[a.length - 1].y4, a[0].x1, center)
+        || isEmpty(b[0].y1, b[0].x4, b[b.length - 1].y4, b[0].x1, center)) {
+        a[0].x4 = b[0].x4;
+        a[0].y4 = a[a.length - 1].y4;
+        square = square.filter(item => !item.ignore);
+        finalVertical.splice(i--, 1);
+        fin = false;
+      }
+    }
+    for(let i = 1; i < finalHorizontal.length - 1; i++) {
+      let l = finalHorizontal[i];
+      let pair = getPairGroupSquare(square, l, true);
+      if(!pair) {
+        continue;
+      }
+      let a = pair[0].map((item, i) => {
+        if(i) {
+          square[item].ignore = true;
+        }
+        return square[item];
+      });
+      let b = pair[1].map((item, i) => {
+        if(i) {
+          square[item].ignore = true;
+        }
+        return square[item];
+      });
+      if(isEmpty(a[0].y1, a[a.length - 1].x4, a[0].y4, a[0].x1, center)
+        || isEmpty(b[0].y1, b[b.length - 1].x4, b[0].y4, b[0].x1, center)) {
+        a[0].y4 = b[0].y4;
+        a[0].x4 = a[a.length - 1].x4;
+        square = square.filter(item => !item.ignore);
+        finalHorizontal.splice(i--, 1);
+        fin = false;
+      }
+    }
     if(fin) {
       break;
     }
   }
   while(true);
   return {
-    unionHorizontal,
-    unionVertical,
+    finalHorizontal,
+    finalVertical,
   };
 }
 
@@ -615,7 +697,68 @@ function getPairSquare(square, l, hOrV) {
   return null;
 }
 
+function getPairGroupSquare(square, l, hOrV) {
+  let a = [];
+  let b = [];
+  let as = [];
+  let bs = [];
+  if(hOrV) {
+    for(let i = 0; i < square.length; i++) {
+      let item = square[i];
+      if(item.y4 === l.y && item.x1 >= l.x[0] && item.x4 <= l.x[1]) {
+        a.push(i);
+        as.push(item);
+      }
+      else if(item.y1 === l.y && item.x1 >= l.x[0] && item.x4 <= l.x[1]) {
+        b.push(i);
+        bs.push(item);
+      }
+    }
+    if(as.length && bs.length) {
+      for(let i = 1; i < as.length; i++) {
+        if(as[i].y1 !== as[0].y1) {
+          return null;
+        }
+      }
+      for(let i = 1; i < bs.length; i++) {
+        if(bs[i].y4 !== bs[0].y4) {
+          return null;
+        }
+      }
+      return [a, b];
+    }
+  }
+  else {
+    for(let i = 0; i < square.length; i++) {
+      let item = square[i];
+      if(item.x4 === l.x && item.y1 >= l.y[0] && item.y4 <= l.y[1]) {
+        a.push(i);
+        as.push(item);
+      }
+      else if(item.x1 === l.x && item.y1 >= l.y[0] && item.y4 <= l.y[1]) {
+        b.push(i);
+        bs.push(item);
+      }
+    }
+    if(as.length && bs.length) {
+      for(let i = 1; i < as.length; i++) {
+        if(as[i].x1 !== as[0].x1) {
+          return null;
+        }
+      }
+      for(let i = 1; i < bs.length; i++) {
+        if(bs[i].x4 !== bs[0].x4) {
+          return null;
+        }
+      }
+      return [a, b];
+    }
+  }
+  return null;
+}
+
 export default function(json) {
+  json = json.filter(item => !item.isBackground);
   let { top, right, bottom, left, originHorizontal, originVertical } = getOrigin(json);
   let { extendHorizontal, extendVertical } = getExtend(top, right, bottom, left, originHorizontal, originVertical);
   let { mergeHorizontal, mergeVertical, point } = getMerge(extendHorizontal, extendVertical);
@@ -626,7 +769,8 @@ export default function(json) {
       y: item.ys + (item.height >> 1),
     });
   });
-  let { unionHorizontal, unionVertical } = getUnion(mergeHorizontal, mergeVertical, center, point);
+  let { unionHorizontal, unionVertical, unionPoint, square } = getUnion(mergeHorizontal, mergeVertical, center, point);
+  let { finalHorizontal, finalVertical } = getFinal(unionHorizontal, unionVertical, center, square);
   return {
     originHorizontal,
     originVertical,
@@ -638,5 +782,8 @@ export default function(json) {
     unionHorizontal,
     unionVertical,
     point,
+    unionPoint,
+    finalHorizontal,
+    finalVertical,
   };
 }

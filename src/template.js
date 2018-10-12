@@ -426,6 +426,22 @@ body{
   ${data.item.center.map(data => {
     return `<li class="c" style="left:${data.x}px;top:${data.y}px"></li>`;
   }).join('\n')}
+  ${data.item.unionPoint.map(data => {
+    return `<li class="p" style="left:${data.x}px;top:${data.y}px"></li>`;
+  }).join('\n')}
+</ul>
+<ul id="preview">
+  ${data.item.finalHorizontal.map(data => {
+    return `<li class="h" style="left:${data.x[0]}px;top:${data.y}px;width:${data.x[1] - data.x[0]}px"
+      title="${data.x[0]}:${data.x[1]}|${data.y}" alt="${data.st}|${data.i}"></li>`;
+  }).join('\n')}
+  ${data.item.finalVertical.map(data => {
+    return `<li class="v" style="left:${data.x}px;top:${data.y[0]}px;height:${data.y[1] - data.y[0]}px"
+      title="${data.x}|${data.y[0]}:${data.y[1]}" alt="${data.st}|${data.i}"></li>`;
+  }).join('\n')}
+  ${data.item.center.map(data => {
+    return `<li class="c" style="left:${data.x}px;top:${data.y}px"></li>`;
+  }).join('\n')}
 </ul>
 </body>
 </html>`;
