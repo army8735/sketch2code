@@ -202,7 +202,7 @@ class ScLayer {
                 isImage = false;
               }
             }
-            else if(item.type !== type.SHAPE && item.type !== item.IMAGE) {
+            else if(item.type !== type.SHAPE && item.type !== item.IMAGE && item.type !== item.SHAPE_PATH) {
               isImage = false;
             }
           });

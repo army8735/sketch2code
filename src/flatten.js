@@ -21,6 +21,7 @@ function recursion(data, list) {
     case type.IMAGE:
     case type.TEXT:
     case type.SHAPE:
+    case type.SHAPE_PATH:
       list.push(data);
       break;
     case type.SYMBOL_INSTANCE:
