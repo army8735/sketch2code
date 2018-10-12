@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/army8735/sketch2code.svg?branch=master)](https://travis-ci.org/army8735/sketch2code)
 [![Dependency Status](https://david-dm.org/army8735/sketch2code.png)](https://david-dm.org/army8735/sketch2code)
 
-[![logo](https://raw.githubusercontent.com/army8735/sketch2code/master/assets/logo.jpg)](https://github.com/army8735/sketch2code)
+[![logo](https://raw.githubusercontent.com/army8735/sketch2code/master/assets/icon.png)](https://github.com/army8735/sketch2code)
 
 ## reference
 * Sketch: https://developer.sketchapp.com/reference/api/
