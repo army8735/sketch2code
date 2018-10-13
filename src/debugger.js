@@ -8,11 +8,12 @@ import format from './format';
 import flatten from './flatten';
 import overlay from './overlay';
 import edge from './edge';
+import combine from './combine';
 import util from './util';
 import template from './template';
 
 export function overall() {
-  let list = [formats, flattens, overlays, edges];
+  let list = [formats, flattens, overlays, edges, combines];
   for(let i = 0; i < list.length; i++) {
     let res = list[i]();
     if(!res) {
@@ -222,7 +223,21 @@ export function edges() {
     let id = ids[i];
     let dir = `${directory}/${id}.json`;
     message.push(dir);
-    let s = JSON.stringify(item, null, 2);
+    let s = JSON.stringify({
+      center: item.center,
+      finalHorizontal: item.finalHorizontal.map(h => {
+        return {
+          x: h.x,
+          y: h.y,
+        };
+      }),
+      finalVertical: item.finalVertical.map(v => {
+        return {
+          x: v.x,
+          y: v.y,
+        };
+      }),
+    }, null, 2);
     NSString.stringWithString(s).writeToFile_atomically_encoding_error(NSString.stringWithString(dir), false, NSUTF8StringEncoding, null);
     dir = `${directory}/${id}.html`;
     let document = Document.getSelectedDocument();
@@ -232,6 +247,67 @@ export function edges() {
     let pageHeight = top.frame.height;
     s = template.edge({
       title: 'edge',
+      pageWidth,
+      pageHeight,
+      item,
+    });
+    NSString.stringWithString(s).writeToFile_atomically_encoding_error(NSString.stringWithString(dir), false, NSUTF8StringEncoding, null);
+  });
+  UI.alert('Message', `JSON edge have been outputing to:\n${message.join('\n')}`);
+  return true;
+}
+
+export function combines() {
+  let selection = preCheck();
+  if(!selection) {
+    return false;
+  }
+  let check = [];
+  selection.forEach(item => {
+    let dir = `${NSHomeDirectory()}/Documents/sketch2code/edge/${item.id}.json`;
+    let fileManager = NSFileManager.defaultManager();
+    if(!fileManager.fileExistsAtPath(NSString.stringWithString(dir))) {
+      check.push(dir);
+    }
+  });
+  if(check.length) {
+    UI.alert('Warn', `JSON data must be prepared by edge command:\n${check.join('\n')}`);
+    return false;
+  }
+  let list = [];
+  let ids = [];
+  selection.forEach(item => {
+    ids.push(item.id);
+    let dir = `${NSHomeDirectory()}/Documents/sketch2code/edge/${item.id}.json`;
+    let fileHandler = NSFileHandle.fileHandleForReadingAtPath(dir);
+    let data = fileHandler.readDataToEndOfFile();
+    let s = NSString.alloc().initWithData_encoding(data, NSUTF8StringEncoding);
+    let json = JSON.parse(s);
+    list.push(json);
+  });
+  let arr = list.map(item => {
+    return combine(item);
+  });
+  let message = [];
+  arr.forEach((item, i) => {
+    let directory = `${NSHomeDirectory()}/Documents/sketch2code/combine`;
+    let fileManager = NSFileManager.defaultManager();
+    if(!fileManager.fileExistsAtPath(NSString.stringWithString(directory))) {
+      fileManager.createDirectoryAtPath_withIntermediateDirectories_attributes_error(NSString.stringWithString(directory), true, null, null);
+    }
+    let id = ids[i];
+    let dir = `${directory}/${id}.json`;
+    message.push(dir); console.log(item);
+    let s = JSON.stringify(item, null, 2);
+    NSString.stringWithString(s).writeToFile_atomically_encoding_error(NSString.stringWithString(dir), false, NSUTF8StringEncoding, null);
+    dir = `${directory}/${id}.html`;
+    let document = Document.getSelectedDocument();
+    let layer = document.getLayerWithID(id);
+    let top = util.getTop(layer);
+    let pageWidth = top.frame.width;
+    let pageHeight = top.frame.height;
+    s = template.combine({
+      title: 'combine',
       pageWidth,
       pageHeight,
       item,

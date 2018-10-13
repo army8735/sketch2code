@@ -536,8 +536,10 @@ function getFinal(unionHorizontal, unionVertical, center, square) {
       });
       if(isEmpty(a[0].y1, a[0].x4, a[a.length - 1].y4, a[0].x1, center)
         || isEmpty(b[0].y1, b[0].x4, b[b.length - 1].y4, b[0].x1, center)) {
-        a[0].x4 = b[0].x4;
-        a[0].y4 = a[a.length - 1].y4;
+        a.forEach((item, i) => {
+          item.x4 = b[i].x4;
+          item.y4 = a[a.length - 1].y4;
+        });
         square = square.filter(item => !item.ignore);
         finalVertical.splice(i--, 1);
         fin = false;
@@ -563,8 +565,10 @@ function getFinal(unionHorizontal, unionVertical, center, square) {
       });
       if(isEmpty(a[0].y1, a[a.length - 1].x4, a[0].y4, a[0].x1, center)
         || isEmpty(b[0].y1, b[b.length - 1].x4, b[0].y4, b[0].x1, center)) {
-        a[0].y4 = b[0].y4;
-        a[0].x4 = a[a.length - 1].x4;
+        a.forEach((item, i) => {
+          item.y4 = b[i].y4;
+          item.x4 = a[a.length - 1].x4;
+        });
         square = square.filter(item => !item.ignore);
         finalHorizontal.splice(i--, 1);
         fin = false;
@@ -767,6 +771,7 @@ export default function(json) {
     center.push({
       x: item.xs + (item.width >> 1),
       y: item.ys + (item.height >> 1),
+      id: item.id,
     });
   });
   let { unionHorizontal, unionVertical, unionPoint, square } = getUnion(mergeHorizontal, mergeVertical, center, point);
