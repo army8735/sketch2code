@@ -297,7 +297,7 @@ export function combines() {
     }
     let id = ids[i];
     let dir = `${directory}/${id}.json`;
-    message.push(dir); console.log(item);
+    message.push(dir);
     let s = JSON.stringify(item, null, 2);
     NSString.stringWithString(s).writeToFile_atomically_encoding_error(NSString.stringWithString(dir), false, NSUTF8StringEncoding, null);
     dir = `${directory}/${id}.html`;
